@@ -1,15 +1,13 @@
-# ApprenticeVR
+apprentice vr is a modern, cross-platform desktop application built with electron, react, and typescript, designed for managing and sideloading content onto Meta Quest devices. It aims to provide a user-friendly and feature-rich alternative to existing sideloading tools.
 
-ApprenticeVR is a modern, cross-platform desktop application built with Electron, React, and TypeScript, designed for managing and sideloading content onto Meta Quest devices. It aims to provide a user-friendly and feature-rich alternative to existing sideloading tools.
+## inspiration
 
-## Inspiration
+this project is heavily inspired by the fantastic work done on [rookie sideloader](https://github.com/VRPirates/rookie). apprentice vr seeks to build upon that foundation by offering a contemporary interface and experience across windows, mac, and linux.
 
-This project is heavily inspired by the fantastic work done on [Rookie Sideloader](https://github.com/VRPirates/rookie). ApprenticeVR seeks to build upon that foundation by offering a contemporary interface and experience across Windows, macOS, and Linux.
+## features
 
-## Features
-
-*   **Cross-Platform:** Works seamlessly on Windows, macOS, and Linux.
-*   **Modern User Interface:** Built with Fluent UI and React for a clean and responsive experience.
+*   **cross-platform:** works seamlessly on windows, mac, and linux.
+*   **modern user interface:** Built with Fluent UI and React for a clean and responsive experience.
 *   **Device Management:**
     *   Automatically detect and list connected Meta Quest devices.
     *   Connect to and disconnect from devices.
