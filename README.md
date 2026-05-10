@@ -52,23 +52,6 @@ apprentice vr is a modern, cross-platform desktop application built with electro
     *   cancel, retry, and delete downloaded files.
 *   **automatic dependency handling:** manages required tools like adb and rclone.
 *   **light & dark mode:** adapts to your system's preferred theme.
->>>>>>> 99d35b0 (chore: convert ## headers to <h2 align='center'> format in README.md)
-
-<h2 align="center">screenshots</h2>
-
-here are some glimpses of apprentice vr in action:
-
-**device list (dark mode)**
-![device list - dark mode](screenshots/01_devices_dark.png)
-
-**game library (light mode)**
-![game library - light mode](screenshots/02_library_light.png)
-
-**game details (light mode)**
-![game details - light mode](screenshots/03_detail_light.png)
-
-**downloads manager (dark mode)**
-![downloads manager - dark mode](screenshots/04_download_dark.png)
 
 <h2 align="center">logs</h2>
 
