@@ -65,7 +65,7 @@ by default, it writes logs to the following locations:
 
 you can also upload the current log file in the settings menu and share the url.
 
-# troubleshooting guide
+<h1 align="center">troubleshooting</h2>
 
 if apprentice vr is unable to connect, follow the steps below to identify and resolve the issue:
 
@@ -129,12 +129,12 @@ if you're still stuck, feel free to open an issue or ask for help in the communi
 
 <h2 align="center">project setup</h2>
 
-### prerequisites
+<h3 align="center">prerequesites</h3>
 
 *   [node.js](https://nodejs.org/) (which includes npm)
 *   [pnpm](https://pnpm.io/installation) (recommended package manager)
 
-### install dependencies
+<h3 align="center">install dependencies</h3>
 
 ```bash
 pnpm install
