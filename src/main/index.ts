@@ -137,15 +137,6 @@ function createWindow(): void {
           } catch (serviceInitError) {
             console.error('Error initializing dependent services:', serviceInitError)
             dependencyService.setDependencyServiceStatus('ERROR')
-            // Optionally notify the renderer about this failure
-            // if (mainWindow && !mainWindow.isDestroyed()) {
-            //   typedWebContentsSend.send(mainWindow, 'service-init-error', {
-            //     message:
-            //       serviceInitError instanceof Error
-            //         ? serviceInitError.message
-            //         : 'Unknown service initialization error'
-            //   })
-            // }
           }
           // -----------------------------------------------------------
         }
