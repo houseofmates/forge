@@ -1,5 +1,5 @@
 import { join } from 'path'
-import { promises as fs, readFileSync } from 'fs'
+import { promises as fs } from 'fs'
 import { execa } from 'execa'
 import { app, BrowserWindow } from 'electron'
 import { existsSync } from 'fs'
@@ -662,10 +662,13 @@ class GameService extends EventEmitter implements GamesAPI {
     })
   }
 
-  getNote(releaseName: string): Promise<string> {
+  async getNote(releaseName: string): Promise<string> {
     const notePath = join(this.metaPath, 'notes', `${releaseName}.txt`)
-    const noteExists = existsSync(notePath)
-    return Promise.resolve(noteExists ? readFileSync(notePath, 'utf-8') : '')
+    try {
+      return await fs.readFile(notePath, 'utf-8')
+    } catch {
+      return ''
+    }
   }
 
   async getTrailerVideoId(gameName: string): Promise<string | null> {
