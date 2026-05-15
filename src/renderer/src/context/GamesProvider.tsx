@@ -34,12 +34,7 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
   const [missingGames] = useState<GameInfo[]>([])
   const [outdatedGames] = useState<GameInfo[]>([])
 
-  const {
-    packages: installedPackages,
-    isConnected: isDeviceConnected,
-    selectedDevice,
-    selectedDeviceDetails
-  } = useAdb()
+  const { packages: installedPackages, isConnected: isDeviceConnected, selectedDevice } = useAdb()
   const { isReady } = useDependency()
 
   const addGameToBlacklist = useCallback(
@@ -65,10 +60,6 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
   const checkForUploadCandidates = useCallback(() => {
     if (!isDeviceConnected || installedPackages.length === 0 || rawGames.length === 0) {
       return
-    }
-
-    if (!selectedDeviceDetails?.isQuestDevice) {
-      //return
     }
 
     const candidates: UploadCandidate[] = []
@@ -140,7 +131,7 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
     }
 
     processInstalledPackages()
-  }, [isDeviceConnected, installedPackages, rawGames, selectedDeviceDetails, selectedDevice])
+  }, [isDeviceConnected, installedPackages, rawGames, selectedDevice])
 
   // Check for upload candidates whenever device versions or game data changes
   useEffect(() => {

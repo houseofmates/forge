@@ -58,18 +58,10 @@ class GameService extends EventEmitter implements GamesAPI {
       // Load configuration if exists
       await this.loadConfig()
 
-      // Check if we need to sync data
-      // const needsSync = await this.needsSync()
-
-      // if (needsSync) {
-      //   console.log('Syncing game data...')
-      //   await this.syncGameData()
-      // } else {
       console.log('Using cached game data...')
       await this.loadGameList()
       await this.loadBlacklistGames()
       await this.loadCustomBlacklistGames()
-      //}
     } catch (error) {
       console.error('Error initializing game service:', error)
       this.status = 'ERROR'
@@ -122,28 +114,6 @@ class GameService extends EventEmitter implements GamesAPI {
       console.error('Error saving configuration:', error)
     }
   }
-
-  // private async needsSync(): Promise<boolean> {
-  //   try {
-  //     // Check if game list file exists
-  //     const gameListExists = await fileExists(this.gameListPath)
-  //     if (!gameListExists) {
-  //       return true
-  //     }
-
-  //     // If no last sync time or it's been more than 24 hours, sync again
-  //     if (!this.vrpConfig?.lastSync) {
-  //       return true
-  //     }
-
-  //     const lastSync = this.vrpConfig.lastSync
-  //     const ONE_DAY = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
-  //     return Date.now() - lastSync.getTime() > ONE_DAY
-  //   } catch (error) {
-  //     console.error('Error checking if sync is needed:', error)
-  //     return true // Default to sync on error
-  //   }
-  // }
 
   async syncGameData(): Promise<void> {
     try {
