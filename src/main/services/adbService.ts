@@ -737,7 +737,6 @@ class AdbService extends EventEmitter implements AdbAPI {
       throw new Error('[ADB Service] adb service not initialized!')
     }
 
-    // let finalRemotePath = remotePath // Will be determined in the try block
     // Initialize with normalized remotePath to ensure it's always defined for logging in catch block
     let finalRemotePath: string = remotePath.replace(/\\/g, '/')
 
