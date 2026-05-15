@@ -242,13 +242,12 @@ export interface GamesAPI {
   isGameBlacklisted: (packageName: string, version?: number) => boolean
 }
 
-export interface GameAPIRenderer
-  extends Modify<
-    GamesAPI,
-    {
-      isGameBlacklisted: (packageName: string, version?: number) => Promise<boolean>
-    }
-  > {
+export interface GameAPIRenderer extends Modify<
+  GamesAPI,
+  {
+    isGameBlacklisted: (packageName: string, version?: number) => Promise<boolean>
+  }
+> {
   onDownloadProgress: (callback: (progress: DownloadProgress) => void) => () => void
 }
 
@@ -328,20 +327,19 @@ export interface SettingsAPI {
   setColorScheme: (scheme: 'light' | 'dark') => void
 }
 
-export interface SettingsAPIRenderer
-  extends Modify<
-    SettingsAPI,
-    {
-      getDownloadPath: () => Promise<string>
-      setDownloadPath: (path: string) => Promise<void>
-      getDownloadSpeedLimit: () => Promise<number>
-      setDownloadSpeedLimit: (limit: number) => Promise<void>
-      getUploadSpeedLimit: () => Promise<number>
-      setUploadSpeedLimit: (limit: number) => Promise<void>
-      getColorScheme: () => Promise<'light' | 'dark'>
-      setColorScheme: (scheme: 'light' | 'dark') => Promise<void>
-    }
-  > {}
+export interface SettingsAPIRenderer extends Modify<
+  SettingsAPI,
+  {
+    getDownloadPath: () => Promise<string>
+    setDownloadPath: (path: string) => Promise<void>
+    getDownloadSpeedLimit: () => Promise<number>
+    setDownloadSpeedLimit: (limit: number) => Promise<void>
+    getUploadSpeedLimit: () => Promise<number>
+    setUploadSpeedLimit: (limit: number) => Promise<void>
+    getColorScheme: () => Promise<'light' | 'dark'>
+    setColorScheme: (scheme: 'light' | 'dark') => Promise<void>
+  }
+> {}
 
 // Logs API
 export interface LogsAPI {

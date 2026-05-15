@@ -29,6 +29,7 @@ class MirrorService extends EventEmitter implements MirrorAPI {
   private metadataPath: string
   private mirrors: MirrorMetadata[] = []
   private activeMirrorId: string | null = null
+  private saveQueue: Promise<void> = Promise.resolve()
 
   constructor() {
     super()
@@ -74,17 +75,25 @@ class MirrorService extends EventEmitter implements MirrorAPI {
   }
 
   private async saveMirrors(): Promise<void> {
-    try {
-      const data = {
-        mirrors: this.mirrors,
-        activeMirrorId: this.activeMirrorId
-      }
-      await fs.writeFile(this.metadataPath, JSON.stringify(data, null, 2), 'utf-8')
-      console.log('Mirrors metadata saved successfully')
-      this.emitMirrorsUpdated()
-    } catch (error) {
-      console.error('Error saving mirrors metadata:', error)
-    }
+    this.saveQueue = this.saveQueue
+      .then(async () => {
+        try {
+          const data = {
+            mirrors: this.mirrors,
+            activeMirrorId: this.activeMirrorId
+          }
+          await fs.writeFile(this.metadataPath, JSON.stringify(data, null, 2), 'utf-8')
+          console.log('Mirrors metadata saved successfully')
+          this.emitMirrorsUpdated()
+        } catch (error) {
+          console.error('Error saving mirrors metadata:', error)
+        }
+      })
+      .catch((error) => {
+        console.error('Error in save queue:', error)
+      })
+
+    return this.saveQueue
   }
 
   private async emitMirrorsUpdated(): Promise<void> {
@@ -380,24 +389,37 @@ class MirrorService extends EventEmitter implements MirrorAPI {
   }
 
   async testAllMirrors(): Promise<MirrorTestResult[]> {
-    console.log(`Testing all ${this.mirrors.length} mirrors...`)
+    console.log(`Testing all ${this.mirrors.length} mirrors concurrently...`)
     const results: MirrorTestResult[] = []
+    const mirrorsToTest = [...this.mirrors]
+    const concurrencyLimit = 3
 
-    // Test mirrors sequentially to avoid overwhelming the system
-    for (const mirror of this.mirrors) {
-      try {
-        const result = await this.testMirror(mirror.id)
-        results.push(result)
-      } catch (error) {
-        console.error(`Error testing mirror ${mirror.name}:`, error)
-        results.push({
-          id: mirror.id,
-          success: false,
-          error: error instanceof Error ? error.message : String(error),
-          timestamp: new Date()
-        })
+    const worker = async (): Promise<void> => {
+      while (mirrorsToTest.length > 0) {
+        const mirror = mirrorsToTest.shift()
+        if (!mirror) break
+
+        try {
+          const result = await this.testMirror(mirror.id)
+          results.push(result)
+        } catch (error) {
+          console.error(`Error testing mirror ${mirror.name}:`, error)
+          results.push({
+            id: mirror.id,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+            timestamp: new Date()
+          })
+        }
       }
     }
+
+    // Start workers
+    const workers = Array(Math.min(concurrencyLimit, mirrorsToTest.length))
+      .fill(null)
+      .map(() => worker())
+
+    await Promise.all(workers)
 
     console.log(
       `Completed testing all mirrors. ${results.filter((r) => r.success).length}/${results.length} successful`
