@@ -1,5 +1,3 @@
-
-
 .games-header {
   display: flex;
   justify-content: space-between;
@@ -96,7 +94,6 @@
   overflow-y: auto; /* Make list scrollable */
   flex-grow: 1; /* Allow list to grow */
 }
-
 
 .game-info {
   display: flex;
