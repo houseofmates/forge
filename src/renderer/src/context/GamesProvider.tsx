@@ -147,7 +147,6 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
 
   // enrich the games with the installed packages and the device version codes
   const games = useMemo((): GameInfo[] => {
-    // Map packageName to versionCode for O(1) lookups
     const installedMap = new Map(installedPackages.map((pkg) => [pkg.packageName, pkg.versionCode]))
 
     return rawGames.map((game) => {
