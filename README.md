@@ -2,64 +2,63 @@
 
 <h2 align="center">features</h2>
 
-*   **cross-platform:** works seamlessly on windows, mac, and linux.
-*   **modern user interface:** Built with Fluent UI and React for a clean and responsive experience.
-*   **device management:**
-    *   automatically detect and list connected Meta Quest devices.
-    *   connect to and disconnect from devices.
-    *   view device details such as model, ID, battery level, and storage information.
-    *   handles unauthorized and offline device states.
-*   **game library management:**
-    *   browse a comprehensive list of available games and applications.
-    *   vew game details including thumbnails, descriptions, versions, popularity, size, and last update date.
-    *   search and filter games by name, package ID, installation status, or available updates.
-*   **installation & sideloading:**
-    *   download game files and OBBs.
-    *   install, uninstall, and update applications on your Quest device.
-    *   reinstall existing applications.
-    *   handle updates for installed applications.
-*   **download management:**
-    *   view and manage a queue of ongoing and completed downloads.
-    *   track download progress, extraction progress, and installation status.
-    *   cancel, retry, and delete downloaded files.
-*   **automatic Dependency Handling:** Manages required tools like ADB and rclone.
-=======
+- **cross-platform:** works seamlessly on windows, mac, and linux.
+- **modern user interface:** Built with Fluent UI and React for a clean and responsive experience.
+- **device management:**
+  - automatically detect and list connected Meta Quest devices.
+  - connect to and disconnect from devices.
+  - view device details such as model, ID, battery level, and storage information.
+  - handles unauthorized and offline device states.
+- **game library management:**
+  - browse a comprehensive list of available games and applications.
+  - vew game details including thumbnails, descriptions, versions, popularity, size, and last update date.
+  - search and filter games by name, package ID, installation status, or available updates.
+- **installation & sideloading:**
+  - download game files and OBBs.
+  - install, uninstall, and update applications on your Quest device.
+  - reinstall existing applications.
+  - handle updates for installed applications.
+- **download management:**
+  - view and manage a queue of ongoing and completed downloads.
+  - track download progress, extraction progress, and installation status.
+  - cancel, retry, and delete downloaded files.
+- # **automatic Dependency Handling:** Manages required tools like ADB and rclone.
 <h2 align="center">apprentice vr</h2>
 
 apprentice vr is a modern, cross-platform desktop application built with electron, react, and typescript, designed for managing and sideloading content onto quest 2 devices. it aims to provide a user-friendly and feature-rich alternative to existing sideloading tools, featuring a pkm aesthetic with varela round font, lowercase text, and a dark color scheme with yellow/blue accents. this is a fork of the original [project](https://github.com/jimzrt/apprenticeVr)
 
 <h2 align="center">features</h2>
 
-*   **cross-platform:** works seamlessly on windows, macos, and linux.
-*   **modern user interface:** pkm aesthetic with varela round font, lowercase text, and a dark color scheme with yellow/blue accents.
-*   **device management:**
-    *   automatically detect and list connected quest 2 devices.
-    *   connect to and disconnect from devices.
-    *   view device details such as model, id, battery level, and storage information.
-    *   handles unauthorized and offline device states.
-*   **game library management:**
-    *   browse a comprehensive list of available games and applications.
-    *   view game details including thumbnails, descriptions, versions, popularity, size, and last update date.
-    *   search and filter games by name, package id, installation status, or available updates.
-*   **installation & sideloading:**
-    *   download game files and obbs.
-    *   install, uninstall, and update applications on your quest 2 device.
-    *   reinstall existing applications.
-    *   handle updates for installed applications.
-*   **download management:**
-    *   view and manage a queue of ongoing and completed downloads.
-    *   track download progress, extraction progress, and installation status.
-    *   cancel, retry, and delete downloaded files.
-*   **automatic dependency handling:** manages required tools like adb and rclone.
-*   **light & dark mode:** adapts to your system's preferred theme.
+- **cross-platform:** works seamlessly on windows, macos, and linux.
+- **modern user interface:** pkm aesthetic with varela round font, lowercase text, and a dark color scheme with yellow/blue accents.
+- **device management:**
+  - automatically detect and list connected quest 2 devices.
+  - connect to and disconnect from devices.
+  - view device details such as model, id, battery level, and storage information.
+  - handles unauthorized and offline device states.
+- **game library management:**
+  - browse a comprehensive list of available games and applications.
+  - view game details including thumbnails, descriptions, versions, popularity, size, and last update date.
+  - search and filter games by name, package id, installation status, or available updates.
+- **installation & sideloading:**
+  - download game files and obbs.
+  - install, uninstall, and update applications on your quest 2 device.
+  - reinstall existing applications.
+  - handle updates for installed applications.
+- **download management:**
+  - view and manage a queue of ongoing and completed downloads.
+  - track download progress, extraction progress, and installation status.
+  - cancel, retry, and delete downloaded files.
+- **automatic dependency handling:** manages required tools like adb and rclone.
+- **light & dark mode:** adapts to your system's preferred theme.
 
 <h2 align="center">logs</h2>
 
 by default, it writes logs to the following locations:
 
- - **on linux:** `~/.config/apprenticevr/logs/main.log`
- - **on macos:** `~/library/logs/apprenticevr/main.log`
- - **on windows:** `%userprofile%\appdata\roaming\apprenticevr\logs\main.log`
+- **on linux:** `~/.config/apprenticevr/logs/main.log`
+- **on macos:** `~/library/logs/apprenticevr/main.log`
+- **on windows:** `%userprofile%\appdata\roaming\apprenticevr\logs\main.log`
 
 **note:** when opening an issue, please include the latest log output from the appropriate log file above to help with debugging and troubleshooting.
 
@@ -113,11 +112,12 @@ check out this guide for help:
 ➡️ [https://rentry.co/asusrouterblock](https://rentry.co/asusrouterblock)
 
 you can either:
-  - continue using a vpn
-  - or identify and whitelist the following domains in your router/firewall settings:
-    - `raw.githubusercontent.com`
-    - `downloads.rclone.org`
-    - `go.vrpyourself.online`
+
+- continue using a vpn
+- or identify and whitelist the following domains in your router/firewall settings:
+  - `raw.githubusercontent.com`
+  - `downloads.rclone.org`
+  - `go.vrpyourself.online`
 
 ---
 
@@ -131,8 +131,8 @@ if you're still stuck, feel free to open an issue or ask for help in the communi
 
 <h3 align="center">prerequesites</h3>
 
-*   [node.js](https://nodejs.org/) (which includes npm)
-*   [pnpm](https://pnpm.io/installation) (recommended package manager)
+- [node.js](https://nodejs.org/) (which includes npm)
+- [pnpm](https://pnpm.io/installation) (recommended package manager)
 
 <h3 align="center">install dependencies</h3>
 
@@ -170,16 +170,19 @@ builds will be located in the `dist` or a platform-specific output directory.
 <h2 align="center">linting and formatting</h2>
 
 to lint the codebase:
+
 ```bash
 pnpm lint
 ```
 
 to format the codebase with prettier:
+
 ```bash
 pnpm format
 ```
 
 to perform type checking:
+
 ```bash
 pnpm typecheck
 ```
