@@ -177,7 +177,7 @@ const MainContent: React.FC<MainContentProps> = ({
             <Text style={{ marginTop: tokens.spacingVerticalM }}>
               For detailed troubleshooting, see:{' '}
               <a
-                href="https://github.com/jimzrt/apprenticeVr#troubleshooting-guide"
+                href="https://github.com/houseofmates/apprentice-vr#troubleshooting-guide"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: tokens.colorBrandForeground1 }}

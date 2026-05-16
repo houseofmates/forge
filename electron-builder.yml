@@ -74,7 +74,7 @@ deb:
 npmRebuild: false
 publish:
   provider: github
-  owner: jimzrt
-  repo: apprenticevr
+  owner: houseofmates
+  repo: apprentice-vr
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
