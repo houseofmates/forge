@@ -7,3 +7,9 @@ out
 .env
 .env.*
 pkg/
+# editors / backups
+*.bak*
+*.swp
+*.tsx.bak*
+/src/renderer/src/components/GamesView.tsx.bak*
+/src/main/services/gameService.ts.backup

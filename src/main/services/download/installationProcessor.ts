@@ -79,7 +79,9 @@ export class InstallationProcessor {
       if (success) {
         console.log(`[InstallProc] Installation completed successfully for ${item.releaseName}.`)
         this.updateItemStatus(item.releaseName, 'Completed', 100, undefined, 100)
-        // TODO: Trigger game list refresh?
+        // game list refresh is handled event-driven by GamesView.tsx:
+        //   'adb:installation-completed' event -> loadPackages()
+        // no sync needed here.
       } else {
         console.error(`[InstallProc] Installation failed for ${item.releaseName}.`)
         // Status already set to InstallError by specific failure points if critical

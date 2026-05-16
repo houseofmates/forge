@@ -971,6 +971,41 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     [isConnected, selectedDevice, loadPackages]
   )
 
+  const performObbCopy = useCallback(
+    async (folderPath: string) => {
+      if (!selectedDevice) return
+
+      const folderName = folderPath.split(/[/\\]/).pop() || folderPath
+
+      // Show the installation dialog
+      setShowInstallDialog(true)
+      setIsManualInstalling(true)
+      setInstallStatusMessage(`Copying OBB folder: ${folderName}...`)
+      setInstallSuccess(null)
+
+      try {
+        const success = await window.api.downloads.copyObbFolder(folderPath, selectedDevice)
+
+        setInstallSuccess(success)
+
+        if (success) {
+          console.log(`OBB folder copy successful for: ${folderPath}`)
+          setInstallStatusMessage(`✅ "${folderName}" copied to OBB directory successfully!`)
+        } else {
+          console.error(`OBB folder copy failed for: ${folderPath}`)
+          setInstallStatusMessage(`❌ Failed to copy "${folderName}" to OBB directory`)
+        }
+      } catch (error) {
+        console.error(`Error during OBB folder copy:`, error)
+        setInstallStatusMessage('❌ OBB copy error occurred')
+        setInstallSuccess(false)
+      } finally {
+        setIsManualInstalling(false)
+      }
+    },
+    [selectedDevice]
+  )
+
   const handleCopyObbFolder = useCallback(async () => {
     if (!isConnected || !selectedDevice) {
       window.alert('Please connect to a device first.')
@@ -1022,43 +1057,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       setShowInstallDialog(true)
       setIsManualInstalling(false)
     }
-  }, [isConnected, selectedDevice])
-
-  const performObbCopy = useCallback(
-    async (folderPath: string) => {
-      if (!selectedDevice) return
-
-      const folderName = folderPath.split(/[/\\]/).pop() || folderPath
-
-      // Show the installation dialog
-      setShowInstallDialog(true)
-      setIsManualInstalling(true)
-      setInstallStatusMessage(`Copying OBB folder: ${folderName}...`)
-      setInstallSuccess(null)
-
-      try {
-        const success = await window.api.downloads.copyObbFolder(folderPath, selectedDevice)
-
-        setInstallSuccess(success)
-
-        if (success) {
-          console.log(`OBB folder copy successful for: ${folderPath}`)
-          setInstallStatusMessage(`✅ "${folderName}" copied to OBB directory successfully!`)
-        } else {
-          console.error(`OBB folder copy failed for: ${folderPath}`)
-          setInstallStatusMessage(`❌ Failed to copy "${folderName}" to OBB directory`)
-        }
-      } catch (error) {
-        console.error(`Error during OBB folder copy:`, error)
-        setInstallStatusMessage('❌ OBB copy error occurred')
-        setInstallSuccess(false)
-      } finally {
-        setIsManualInstalling(false)
-      }
-    },
-    [selectedDevice]
-  )
-
+  }, [isConnected, selectedDevice, performObbCopy])
   const handleObbConfirmCopy = useCallback(async () => {
     if (!obbFolderToConfirm) return
 
