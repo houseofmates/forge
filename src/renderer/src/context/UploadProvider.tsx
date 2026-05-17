@@ -19,7 +19,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     const removeProgressListener = window.api.uploads.onUploadProgress((progressData) => {
       if (isMounted) {
         setProgress(progressData)
-        console.log('Upload progress:', progressData)
 
         // Reset isUploading when upload is complete
         if (progressData.stage === 'Complete') {
@@ -35,7 +34,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     const removeQueueListener = window.api.uploads.onQueueUpdated((updatedQueue) => {
       if (isMounted) {
         setQueue(updatedQueue)
-        console.log('Upload queue updated:', updatedQueue)
       }
     })
 
@@ -47,8 +45,8 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
           setQueue(initialQueue)
         }
       })
-      .catch((err) => {
-        console.error('Error fetching initial upload queue:', err)
+      .catch(() => {
+        // Failed to fetch initial upload queue
       })
 
     return () => {
@@ -113,16 +111,16 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
   const removeFromQueue = useCallback((packageName: string) => {
     try {
       window.api.uploads.removeFromQueue(packageName)
-    } catch (err) {
-      console.error('Error removing from upload queue:', err)
+    } catch {
+      // Failed to remove from upload queue
     }
   }, [])
 
   const cancelUpload = useCallback((packageName: string) => {
     try {
       window.api.uploads.cancelUpload(packageName)
-    } catch (err) {
-      console.error('Error cancelling upload:', err)
+    } catch {
+      // Failed to cancel upload
     }
   }, [])
 

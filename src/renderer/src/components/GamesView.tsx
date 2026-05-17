@@ -105,17 +105,17 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100vh - 90px)',
+    height: 'calc(100dvh - 64px)',
     overflow: 'hidden',
-    backgroundColor: tokens.colorNeutralBackground1
+    backgroundColor: '#050505'
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     ...shorthands.padding(tokens.spacingVerticalL, tokens.spacingHorizontalL),
-    ...shorthands.borderBottom(tokens.strokeWidthThin, 'solid', tokens.colorNeutralStroke1),
-    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderBottom(tokens.strokeWidthThin, 'solid', '#333333'),
+    backgroundColor: '#111111',
     flexShrink: 0
   },
   headerLeft: {
@@ -137,7 +137,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalXS,
-    color: tokens.colorPaletteRedForeground1
+    color: '#ef4444'
   },
   tableContainer: {
     flexGrow: 1,
@@ -222,7 +222,7 @@ const useStyles = makeStyles({
     }
   },
   isResizing: {
-    background: tokens.colorBrandBackground,
+    background: '#f6b012',
     opacity: 1
   }
 })
@@ -310,15 +310,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
   useEffect(() => {
     const unsubscribe = window.api.adb.onInstallationCompleted((deviceId) => {
-      console.log(`[GamesView] Received installation-completed event for device: ${deviceId}`)
       if (selectedDevice && deviceId === selectedDevice) {
-        console.log(`[GamesView] Refreshing packages for current device ${selectedDevice}...`)
-        loadPackages()
-          .then(() => console.log('[GamesView] Package refresh triggered successfully.'))
-          .catch((err) => console.error('[GamesView] Error triggering package refresh:', err))
-      } else {
-        console.log(
-          `[GamesView] Installation completed event for non-selected device (${deviceId}), ignoring.`
+        loadPackages().catch((err) =>
+          console.error('[GamesView] Error triggering package refresh:', err)
         )
       }
     })
@@ -407,23 +401,15 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
             <div className={styles.statusIconCell}>
               <div style={{ display: 'flex', gap: tokens.spacingHorizontalXXS }}>
                 {isDownloaded && (
-                  <DesktopRegular
-                    fontSize={16}
-                    color={tokens.colorNeutralForeground3}
-                    aria-label="Installed"
-                  />
+                  <DesktopRegular fontSize={16} color="#3c9fdd" aria-label="Installed" />
                 )}
                 {isInstalled && (
-                  <CheckmarkCircleRegular
-                    fontSize={16}
-                    color={tokens.colorPaletteGreenForeground1}
-                    aria-label="Downloaded"
-                  />
+                  <CheckmarkCircleRegular fontSize={16} color="#22c55e" aria-label="Downloaded" />
                 )}
                 {isUpdateAvailable && (
                   <ArrowClockwiseRegular
                     fontSize={16}
-                    color={tokens.colorPaletteGreenForeground1}
+                    color="#22c55e"
                     aria-label="Update Available"
                   />
                 )}
@@ -653,7 +639,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     _event: React.MouseEvent<HTMLTableRowElement>,
     row: Row<GameInfo>
   ): void => {
-    console.log('Row clicked for game:', row.original.name)
     setDialogGame(row.original)
     setIsDialogOpen(true)
   }
@@ -673,18 +658,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
   const handleInstall = (game: GameInfo): void => {
     if (!game) return
-    console.log('Install action triggered for:', game.packageName)
-    addDownloadToQueue(game)
-      .then((success) => {
-        if (success) {
-          console.log(`Successfully added ${game.releaseName} to download queue.`)
-        } else {
-          console.log(`Failed to add ${game.releaseName} to queue (might already exist).`)
-        }
-      })
-      .catch((err) => {
-        console.error('Error adding to queue:', err)
-      })
+    addDownloadToQueue(game).catch((err) => {
+      console.error('Error adding to queue:', err)
+    })
   }
 
   const handleUninstall = async (game: GameInfo): Promise<void> => {
@@ -700,13 +676,12 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(`Uninstall: Starting for ${game.name} (${game.packageName}) on ${selectedDevice}.`)
     setIsLoading(true)
 
     try {
       const success = await window.api.adb.uninstallPackage(selectedDevice, game.packageName)
       if (success) {
-        console.log(`Uninstall: Successfully uninstalled ${game.packageName}.`)
+        // Uninstall successful
       } else {
         console.error(`Uninstall: Failed to uninstall ${game.packageName}.`)
         window.alert('Failed to uninstall the game.')
@@ -735,38 +710,26 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(`Reinstall: Starting for ${game.name} (${game.packageName}) on ${selectedDevice}.`)
     setIsLoading(true)
 
     try {
       // Step 1: Uninstall the package
-      console.log(`Reinstall: Attempting to uninstall ${game.packageName}...`)
       const uninstallSuccess = await window.api.adb.uninstallPackage(
         selectedDevice,
         game.packageName
       )
 
       if (uninstallSuccess) {
-        console.log(`Reinstall: Successfully uninstalled ${game.packageName}.`)
         // The game is now uninstalled from the device.
         // Downloaded files (if any) should still be present.
 
         const downloadInfo = downloadStatusMap.get(game.releaseName)
 
         if (downloadInfo?.status === 'Completed') {
-          console.log(
-            `Reinstall: Files for ${game.releaseName} are 'Completed'. Initiating install from completed.`
-          )
           await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
-          console.log(`Reinstall: 'installFromCompleted' called for ${game.releaseName}.`)
         } else {
-          console.log(
-            `Reinstall: Files for ${game.releaseName} not 'Completed' (status: ${downloadInfo?.status}). Adding to download queue.`
-          )
           const addToQueueSuccess = await addDownloadToQueue(game)
-          if (addToQueueSuccess) {
-            console.log(`Reinstall: Successfully added ${game.releaseName} to download queue.`)
-          } else {
+          if (!addToQueueSuccess) {
             console.warn(
               `Reinstall: Failed to add ${game.releaseName} to queue. Current status: ${downloadInfo?.status}.`
             )
@@ -790,7 +753,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       setIsLoading(false)
       // Refresh packages to update UI. The 'installation-completed' event should also trigger this,
       // but it's good to have a fallback or an immediate refresh after the uninstall part.
-      console.log(`Reinstall: Process finished for ${game.name}. Triggering package refresh.`)
       loadPackages().catch((err) =>
         console.error('Reinstall: Error refreshing packages post-operation:', err)
       )
@@ -808,29 +770,14 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(
-      `Update action triggered for: ${game.name} (${game.packageName}) on ${selectedDevice}`
-    )
-
     try {
       const downloadInfo = downloadStatusMap.get(game.releaseName)
 
       if (downloadInfo?.status === 'Completed') {
-        console.log(
-          `Update for ${game.releaseName}: Files are already 'Completed'. Initiating install from completed.`
-        )
         await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
-        console.log(`Update: 'installFromCompleted' called for ${game.releaseName}.`)
-        // Optionally, refresh packages or rely on 'installation-completed' event
-        // loadPackages().catch(err => console.error('Update: Error refreshing packages post-install:', err));
       } else {
-        console.log(
-          `Update for ${game.releaseName}: Files not 'Completed' (status: ${downloadInfo?.status}). Adding to download queue.`
-        )
         const addToQueueSuccess = await addDownloadToQueue(game)
-        if (addToQueueSuccess) {
-          console.log(`Update: Successfully added ${game.releaseName} to download queue.`)
-        } else {
+        if (!addToQueueSuccess) {
           console.warn(
             `Update: Failed to add ${game.releaseName} to queue. Current status: ${downloadInfo?.status}.`
           )
@@ -849,13 +796,11 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
   const handleRetry = (game: GameInfo): void => {
     if (!game || !game.releaseName) return
-    console.log('Retry action triggered for:', game.releaseName)
     retryDownload(game.releaseName)
   }
 
   const handleCancelDownload = (game: GameInfo): void => {
     if (!game || !game.releaseName) return
-    console.log('Cancel download/extraction action triggered for:', game.releaseName)
     cancelDownload(game.releaseName)
   }
 
@@ -865,7 +810,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       window.alert('Cannot start installation: Missing required information.')
       return
     }
-    console.log(`Requesting install from completed for ${game.releaseName} on ${selectedDevice}`)
     window.api.downloads.installFromCompleted(game.releaseName, selectedDevice).catch((err) => {
       console.error('Error triggering install from completed:', err)
       window.alert('Failed to start installation. Please check the main process logs.')
@@ -875,12 +819,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const handleDeleteDownloaded = useCallback(
     async (game: GameInfo | null): Promise<void> => {
       if (!game || !game.releaseName) return
-      console.log('Delete downloaded files action triggered for:', game.releaseName)
       try {
         const success = await deleteFiles(game.releaseName)
-        if (success) {
-          console.log(`Successfully requested deletion of files for ${game.releaseName}.`)
-        } else {
+        if (!success) {
           console.error(`Failed to delete files for ${game.releaseName}.`)
           window.alert('Failed to delete downloaded files. Check logs.')
         }
@@ -939,7 +880,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         }
 
         const fileName = filePath.split(/[/\\]/).pop() || filePath
-        console.log(`${itemName} install requested for: ${filePath}`)
 
         // Show the installation dialog
         setShowInstallDialog(true)
@@ -952,7 +892,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         setInstallSuccess(success)
 
         if (success) {
-          console.log(`${itemName} installation successful for: ${filePath}`)
           setInstallStatusMessage(`✅ "${fileName}" installed successfully!`)
           // Refresh packages to update the UI
           await loadPackages()
@@ -989,7 +928,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         setInstallSuccess(success)
 
         if (success) {
-          console.log(`OBB folder copy successful for: ${folderPath}`)
           setInstallStatusMessage(`✅ "${folderName}" copied to OBB directory successfully!`)
         } else {
           console.error(`OBB folder copy failed for: ${folderPath}`)
@@ -1020,23 +958,17 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       }
 
       const folderName = folderPath.split(/[/\\]/).pop() || folderPath
-      console.log(`OBB folder copy requested for: ${folderPath}`)
 
       // Check if there's a corresponding package installed
       try {
         const installedPackages = await window.api.adb.getInstalledPackages(selectedDevice)
         const matchingPackage = installedPackages.find((pkg) => pkg.packageName === folderName)
-        console.log('installedPackages', installedPackages)
-        console.log('matchingPackage', matchingPackage)
         if (!matchingPackage) {
           // No matching package found, show confirmation dialog
-          console.log(`No matching package found for folder: ${folderName}`)
           setObbFolderToConfirm(folderPath)
           setShowObbConfirmDialog(true)
           return
         }
-
-        console.log(`Found matching package for folder: ${folderName}`)
       } catch (error) {
         console.error('Error checking installed packages:', error)
         // If we can't check packages, show a warning but let user proceed
@@ -1159,7 +1091,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                       gap: tokens.spacingHorizontalXS
                     }}
                   >
-                    <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    <Text size={200} style={{ color: '#3c9fdd' }}>
                       Username in Multiplayer Games:
                     </Text>
                     <Button
@@ -1172,8 +1104,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                         minHeight: 'auto',
                         padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
                         borderRadius: tokens.borderRadiusMedium,
-                        border: `1px solid ${tokens.colorNeutralStroke2}`,
-                        backgroundColor: tokens.colorNeutralBackground1
+                        border: '1px solid #252525',
+                        backgroundColor: '#050505'
                       }}
                       title="Click to change your VR gaming name (appears in games and apps)"
                     >
@@ -1482,12 +1414,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                           marginTop: tokens.spacingVerticalM,
                           padding: tokens.spacingVerticalS,
                           borderRadius: tokens.borderRadiusMedium,
-                          backgroundColor: installSuccess
-                            ? tokens.colorPaletteGreenBackground1
-                            : tokens.colorPaletteRedBackground1,
-                          color: installSuccess
-                            ? tokens.colorPaletteGreenForeground1
-                            : tokens.colorPaletteRedForeground1
+                          backgroundColor: installSuccess ? '#081a0a' : '#1a0808',
+                          color: installSuccess ? '#22c55e' : '#ef4444'
                         }}
                       >
                         <Text weight="semibold">

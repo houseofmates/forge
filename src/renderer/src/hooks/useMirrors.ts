@@ -35,8 +35,7 @@ export const useMirrors = (): UseMirrorsReturn => {
         ])
         setMirrors(mirrorsData)
         setActiveMirror(activeMirrorData)
-      } catch (err) {
-        console.error('Error loading mirrors:', err)
+      } catch {
         setError('Failed to load mirrors')
       } finally {
         setIsLoading(false)
@@ -98,8 +97,7 @@ export const useMirrors = (): UseMirrorsReturn => {
         setError('Failed to add mirror. Please check the configuration file.')
       }
       return success
-    } catch (err) {
-      console.error('Error adding mirror:', err)
+    } catch {
       setError('Failed to add mirror')
       return false
     }
@@ -113,8 +111,7 @@ export const useMirrors = (): UseMirrorsReturn => {
         setError('Failed to remove mirror')
       }
       return success
-    } catch (err) {
-      console.error('Error removing mirror:', err)
+    } catch {
       setError('Failed to remove mirror')
       return false
     }
@@ -126,8 +123,7 @@ export const useMirrors = (): UseMirrorsReturn => {
       const success = await window.api.mirrors.setActiveMirror(id)
 
       return success
-    } catch (err) {
-      console.error('Error setting active mirror:', err)
+    } catch {
       setError('Failed to set active mirror')
       return false
     }
@@ -138,8 +134,7 @@ export const useMirrors = (): UseMirrorsReturn => {
       setError(null)
       const result = await window.api.mirrors.testMirror(id)
       return result
-    } catch (err) {
-      console.error('Error testing mirror:', err)
+    } catch {
       setError('Failed to test mirror')
       return null
     }
@@ -150,8 +145,7 @@ export const useMirrors = (): UseMirrorsReturn => {
       setError(null)
       const results = await window.api.mirrors.testAllMirrors()
       return results
-    } catch (err) {
-      console.error('Error testing all mirrors:', err)
+    } catch {
       setError('Failed to test mirrors')
       return []
     }
@@ -171,8 +165,7 @@ export const useMirrors = (): UseMirrorsReturn => {
       // Add the mirror using the config content
       const success = await addMirror(configContent)
       return success
-    } catch (err) {
-      console.error('Error importing mirror:', err)
+    } catch {
       setError('Failed to import mirror file')
       return false
     }
@@ -184,8 +177,7 @@ export const useMirrors = (): UseMirrorsReturn => {
       const success = await window.api.mirrors.clearActiveMirror()
 
       return success
-    } catch (err) {
-      console.error('Error clearing active mirror:', err)
+    } catch {
       setError('Failed to clear active mirror')
       return false
     }

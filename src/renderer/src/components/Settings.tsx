@@ -201,8 +201,7 @@ const BlacklistSettings: React.FC = () => {
       setError(null)
       const games = await getBlacklistGames()
       setBlacklistGames(games)
-    } catch (err) {
-      console.error('Error loading blacklisted games:', err)
+    } catch {
       setError('failed to load blacklisted games')
     } finally {
       setIsLoading(false)
@@ -224,8 +223,7 @@ const BlacklistSettings: React.FC = () => {
       setTimeout(() => {
         setRemoveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error removing game from blacklist:', err)
+    } catch {
       setError('failed to remove game from blacklist')
     }
   }
@@ -520,8 +518,7 @@ const Settings: React.FC = () => {
       setTimeout(() => {
         setSaveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error saving download path:', err)
+    } catch {
       setLocalError('failed to save download path')
     }
   }
@@ -581,8 +578,7 @@ const Settings: React.FC = () => {
       setTimeout(() => {
         setSaveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error saving speed limits:', err)
+    } catch {
       setLocalError('failed to save speed limits')
     }
   }
@@ -593,8 +589,7 @@ const Settings: React.FC = () => {
       if (selectedPath) {
         setEditedDownloadPath(selectedPath)
       }
-    } catch (err) {
-      console.error('Error selecting folder:', err)
+    } catch {
       setLocalError('failed to select folder')
     }
   }

@@ -29,16 +29,12 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
         ])
 
         if (isMounted) {
-          console.log('Fetched initial download path:', path)
-          console.log('Fetched initial download speed limit:', downloadLimit)
-          console.log('Fetched initial upload speed limit:', uploadLimit)
           setDownloadPathState(path)
           setDownloadSpeedLimitState(downloadLimit)
           setUploadSpeedLimitState(uploadLimit)
           setColorSchemeState(colorScheme)
         }
-      } catch (err) {
-        console.error('Error fetching settings:', err)
+      } catch {
         if (isMounted) {
           setError('Failed to load settings')
         }
@@ -64,7 +60,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       setDownloadPathState(path)
       setError(null)
     } catch (err) {
-      console.error('Error setting download path:', err)
       setError('Failed to update download path')
       throw err
     } finally {
@@ -80,7 +75,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       setDownloadSpeedLimitState(limit)
       setError(null)
     } catch (err) {
-      console.error('Error setting download speed limit:', err)
       setError('Failed to update download speed limit')
       throw err
     } finally {
@@ -96,7 +90,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       setUploadSpeedLimitState(limit)
       setError(null)
     } catch (err) {
-      console.error('Error setting upload speed limit:', err)
       setError('Failed to update upload speed limit')
       throw err
     } finally {
@@ -111,7 +104,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       setColorSchemeState(scheme)
       setError(null)
     } catch (err) {
-      console.error('Error setting color scheme:', err)
       setError('Failed to update color scheme')
       throw err
     } finally {

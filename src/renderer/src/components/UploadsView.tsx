@@ -8,8 +8,7 @@ import {
   TableHeaderCell,
   TableBody,
   TableCell,
-  Button,
-  tokens
+  Button
 } from '@fluentui/react-components'
 import { useUpload } from '../hooks/useUpload'
 import { UploadItem } from '@shared/types'
@@ -25,13 +24,13 @@ const useStyles = makeStyles({
   },
   progressBar: {
     height: '8px',
-    backgroundColor: tokens.colorNeutralBackground3,
+    backgroundColor: '#111111',
     borderRadius: '4px',
     overflow: 'hidden'
   },
   progress: {
     height: '100%',
-    backgroundColor: tokens.colorBrandBackground,
+    backgroundColor: '#f6b012',
     borderRadius: '4px'
   }
 })
@@ -96,10 +95,7 @@ const UploadRow: React.FC<{ item: UploadItem }> = ({ item }) => {
     case 'Error':
       statusElement = (
         <>
-          <Text
-            weight="semibold"
-            style={{ color: tokens.colorPaletteRedForeground1, marginRight: '4px' }}
-          >
+          <Text weight="semibold" style={{ color: '#ef4444', marginRight: '4px' }}>
             Error
           </Text>
           {item.error && <Text size={200}>{item.error}</Text>}

@@ -23,8 +23,7 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
           setQueue(initialQueue)
         }
       })
-      .catch((err) => {
-        console.error('Error fetching initial download queue:', err)
+      .catch(() => {
         if (isMounted) {
           setError('Failed to load download queue')
         }
@@ -47,14 +46,8 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const addToQueue = useCallback(async (game: GameInfo): Promise<boolean> => {
-    console.log(`Context: Adding ${game.releaseName} to queue...`)
     try {
       const success = await window.api.downloads.addToQueue(game)
-      if (!success) {
-        console.warn(
-          `Context: Failed to add ${game.releaseName} to queue (likely already present).`
-        )
-      }
       return success
     } catch (err) {
       console.error('Error adding game to download queue via IPC:', err)
@@ -64,20 +57,15 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const removeFromQueue = useCallback(async (releaseName: string): Promise<void> => {
-    console.log(`Context: Removing ${releaseName} from queue...`)
-    // Optimistic update? Maybe not necessary as main process handles it
-    // setQueue(prev => prev.filter(item => item.releaseName !== releaseName));
     try {
       await window.api.downloads.removeFromQueue(releaseName)
     } catch (err) {
       console.error('Error removing game from download queue via IPC:', err)
       setError(`Failed to remove item from queue.`)
-      // May need to refetch queue here if optimistic update was used
     }
   }, [])
 
   const cancelDownload = useCallback((releaseName: string): void => {
-    console.log(`Context: Cancelling ${releaseName}...`)
     try {
       window.api.downloads.cancelUserRequest(releaseName)
     } catch (err) {
@@ -87,7 +75,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const retryDownload = useCallback((releaseName: string): void => {
-    console.log(`Context: Retrying ${releaseName}...`)
     try {
       window.api.downloads.retryDownload(releaseName)
     } catch (err) {
@@ -97,7 +84,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const pauseDownload = useCallback((releaseName: string): void => {
-    console.log(`Context: Pausing ${releaseName}...`)
     try {
       window.api.downloads.pauseDownload(releaseName)
     } catch (err) {
@@ -107,7 +93,6 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const resumeDownload = useCallback((releaseName: string): void => {
-    console.log(`Context: Resuming ${releaseName}...`)
     try {
       window.api.downloads.resumeDownload(releaseName)
     } catch (err) {
@@ -117,11 +102,9 @@ export const DownloadProvider: React.FC<DownloadProviderProps> = ({ children }) 
   }, [])
 
   const deleteFiles = useCallback(async (releaseName: string): Promise<boolean> => {
-    console.log(`Context: Deleting downloaded files for ${releaseName}...`)
     try {
       const success = await window.api.downloads.deleteDownloadedFiles(releaseName)
       if (!success) {
-        console.warn(`Context: Failed to delete files for ${releaseName} (backend error).`)
         setError('Failed to delete downloaded files.')
       }
       return success

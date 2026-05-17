@@ -76,7 +76,6 @@ const UploadGamesDialog: React.FC = () => {
     const selectedForUpload = uploadCandidates.filter(
       (candidate) => selectedCandidates[candidate.packageName]
     )
-    console.log('Games selected for upload:', selectedForUpload)
 
     setShowUploadDialog(false)
 
@@ -94,7 +93,6 @@ const UploadGamesDialog: React.FC = () => {
     const selectedForBlacklist = uploadCandidates.filter(
       (candidate) => selectedCandidates[candidate.packageName]
     )
-    console.log('Games selected for blacklist:', selectedForBlacklist)
 
     const closeAfterBlacklist = uploadCandidates.length === selectedForBlacklist.length
 

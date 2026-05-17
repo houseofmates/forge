@@ -58,7 +58,7 @@ const useStyles = makeStyles({
     }
   },
   activeMirrorCard: {
-    ...shorthands.border('2px', 'solid', tokens.colorBrandBackground)
+    ...shorthands.border('2px', 'solid', '#f6b012')
   },
   mirrorHeader: {
     display: 'flex',
@@ -162,13 +162,13 @@ const MirrorManagement: React.FC = () => {
 
     switch (mirror.testStatus) {
       case 'success':
-        return <CheckmarkCircleRegular style={{ color: tokens.colorPaletteGreenForeground1 }} />
+        return <CheckmarkCircleRegular style={{ color: '#22c55e' }} />
       case 'failed':
-        return <DismissCircleRegular style={{ color: tokens.colorPaletteRedForeground1 }} />
+        return <DismissCircleRegular style={{ color: '#ef4444' }} />
       case 'testing':
         return <Spinner size="tiny" />
       default:
-        return <ClockRegular style={{ color: tokens.colorNeutralForeground3 }} />
+        return <ClockRegular style={{ color: '#3c9fdd' }} />
     }
   }
 
@@ -317,13 +317,13 @@ pass = password`}
                         }}
                       >
                         {mirror.isActive ? (
-                          <RecordRegular color={tokens.colorPaletteGreenForeground1} />
+                          <RecordRegular color="#22c55e" />
                         ) : (
                           <RadioButtonRegular />
                         )}
                         <Text weight="semibold">{mirror.name}</Text>
                       </div>
-                      <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                      <Text size={200} style={{ color: '#3c9fdd' }}>
                         {mirror.config.type}://{mirror.config.host}
                         {mirror.config.port && `:${mirror.config.port}`}
                       </Text>
@@ -348,11 +348,11 @@ pass = password`}
               />
               <CardPreview>
                 <div style={{ padding: tokens.spacingVerticalS }}>
-                  <Text size={100} style={{ color: tokens.colorNeutralForeground3 }}>
+                  <Text size={100} style={{ color: '#3c9fdd' }}>
                     Last tested: {formatLastTested(mirror.lastTested)}
                   </Text>
                   {mirror.testError && (
-                    <Text size={100} style={{ color: tokens.colorPaletteRedForeground1 }}>
+                    <Text size={100} style={{ color: '#ef4444' }}>
                       Error: {mirror.testError}
                     </Text>
                   )}

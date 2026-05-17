@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     gap: tokens.spacingHorizontalL,
     paddingTop: tokens.spacingVerticalM,
     paddingBottom: tokens.spacingVerticalM,
-    borderBottom: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke2}`
+    borderBottom: '1px solid #252525'
   },
   thumbnail: {
     width: '60px',
@@ -77,12 +77,12 @@ const useStyles = makeStyles({
     alignItems: 'flex-end'
   },
   errorText: {
-    color: tokens.colorPaletteRedForeground1,
+    color: '#ef4444',
     fontSize: tokens.fontSizeBase200
   },
   statusText: {
     fontSize: tokens.fontSizeBase200,
-    color: tokens.colorNeutralForeground2
+    color: '#ffffff'
   }
 })
 
@@ -101,8 +101,7 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
   const formatAddedTime = (timestamp: number): string => {
     try {
       return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
-    } catch (e: unknown) {
-      console.error('Error formatting date:', e)
+    } catch {
       return 'Invalid date'
     }
   }
@@ -113,7 +112,6 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
       window.alert('Cannot start installation: Missing required information.')
       return
     }
-    console.log(`Requesting install from completed for ${releaseName} on ${selectedDevice}`)
     window.api.downloads.installFromCompleted(releaseName, selectedDevice).catch((err) => {
       console.error('Error triggering install from completed:', err)
       window.alert('Failed to start installation. Please check the main process logs.')
@@ -133,11 +131,9 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
     )
 
     if (confirmUninstall) {
-      console.log(`Uninstalling ${game.packageName} from ${selectedDevice}`)
       try {
         const success = await window.api.adb.uninstallPackage(selectedDevice, game.packageName)
         if (success) {
-          console.log('Uninstall successful')
           await loadPackages()
         } else {
           console.error('Uninstall failed')
@@ -162,9 +158,7 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
     return (
       <div className={styles.root}>
         <Title2>Downloads</Title2>
-        <Text style={{ color: tokens.colorPaletteRedForeground1 }}>
-          Error loading queue: {error}
-        </Text>
+        <Text style={{ color: '#ef4444' }}>Error loading queue: {error}</Text>
       </div>
     )
   }
@@ -193,7 +187,6 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
                   onClick={() => {
                     let gameToOpen = games.find((g) => g.releaseName === item.releaseName)
                     if (!gameToOpen) {
-                      console.log('Game not found by release name, trying by package name')
                       gameToOpen = games.find((g) => g.packageName === item.packageName)
                     }
                     if (gameToOpen) {
@@ -215,10 +208,10 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
                       </Badge>
                     )}
                   </div>
-                  <Text size={200} style={{ color: tokens.colorNeutralForeground2 }}>
+                  <Text size={200} style={{ color: '#ffffff' }}>
                     {item.releaseName}
                   </Text>
-                  <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                  <Text size={200} style={{ color: '#3c9fdd' }}>
                     Added: {formatAddedTime(item.addedDate)}
                   </Text>
                 </div>
@@ -258,7 +251,7 @@ const DownloadsView: React.FC<DownloadsViewProps> = ({ onClose }) => {
                   )}
                   {item.status === 'Queued' && <Text className={styles.statusText}>Queued</Text>}
                   {item.status === 'Completed' && (
-                    <Text style={{ color: tokens.colorPaletteGreenForeground1 }}>Completed</Text>
+                    <Text style={{ color: '#22c55e' }}>Completed</Text>
                   )}
                   {item.status === 'Cancelled' && (
                     <Text className={styles.statusText}>Cancelled</Text>

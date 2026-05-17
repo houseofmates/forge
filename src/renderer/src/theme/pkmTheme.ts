@@ -1,23 +1,24 @@
 import { createDarkTheme, BrandVariants, Theme } from '@fluentui/react-components'
 
-// pkm brand palette based on warm yellow/blue accents
+// pkm brand palette - proper yellow ramp from dark to light
+// brand colors should be variants of the primary brand color (yellow #f6b012)
 const pkmBrand: BrandVariants = {
-  10: '#050505',
-  20: '#0a0a0a',
-  30: '#111111',
-  40: '#1a1a1a',
-  50: '#252525',
-  60: '#333333',
-  70: '#4a4a4a',
+  10: '#1a1508', // darkest yellow tint
+  20: '#332a0f',
+  30: '#4d3f16',
+  40: '#66541e',
+  50: '#806925',
+  60: '#997e2d',
+  70: '#b39434',
   80: '#f6b012', // primary accent yellow
-  90: '#f9c042',
-  100: '#fbd072',
-  110: '#fde0a2',
-  120: '#fff0d2',
-  130: '#fff5e0',
-  140: '#fffaf0',
-  150: '#ffffff',
-  160: '#ffffff'
+  90: '#f7b92a',
+  100: '#f9c242',
+  110: '#facb5a',
+  120: '#fbd472',
+  130: '#fcdd8a',
+  140: '#fde6a2',
+  150: '#feefba',
+  160: '#fff8d2' // lightest yellow tint
 }
 
 const basePkmTheme = createDarkTheme(pkmBrand)

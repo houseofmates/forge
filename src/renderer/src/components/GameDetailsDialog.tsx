@@ -87,7 +87,7 @@ const useStyles = makeStyles({
     whiteSpace: 'pre-wrap',
     maxHeight: '150px',
     overflowY: 'auto',
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: '#0a0a0a',
     padding: tokens.spacingVerticalS,
     borderRadius: tokens.borderRadiusMedium
   },
@@ -208,8 +208,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
           if (isMounted) {
             setCurrentGameNote(note)
           }
-        } catch (err) {
-          console.error(`Error fetching note for ${game.releaseName}:`, err)
+        } catch {
           if (isMounted) {
             setCurrentGameNote('Error loading note.')
           }
@@ -242,8 +241,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
         if (isMounted && videoId) {
           setVideoId(videoId)
         }
-      } catch (error) {
-        console.error('Error searching for game trailer:', error)
+      } catch {
+        // Failed to fetch trailer
       } finally {
         if (isMounted) {
           setLoadingVideo(false)
@@ -455,11 +454,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
                     <Text size={600} weight="semibold">
                       {game.name}
                     </Text>
-                    <Text
-                      size={300}
-                      weight="regular"
-                      style={{ color: tokens.colorNeutralForeground2 }}
-                    >
+                    <Text size={300} weight="regular" style={{ color: '#ffffff' }}>
                       {game.packageName}
                     </Text>
                     <div className={styles.badgesAndInfoContainer}>
@@ -505,7 +500,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
                           {game.version ? `v${game.version}` : '-'}
                           <span
                             style={{
-                              color: tokens.colorNeutralForeground3,
+                              color: '#3c9fdd',
                               fontSize: 12,
                               fontWeight: 'bold'
                             }}
