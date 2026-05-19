@@ -10,7 +10,8 @@ import {
   FilterFn,
   ColumnFiltersState,
   Row,
-  ColumnSizingState
+  ColumnSizingState,
+  RowSelectionState
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useAdb } from '../hooks/useAdb'
@@ -39,7 +40,8 @@ import {
   DialogBody,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Checkbox
 } from '@fluentui/react-components'
 import {
   ArrowClockwiseRegular,
@@ -56,17 +58,20 @@ import {
   ChevronDownRegular,
   CopyRegular,
   StarRegular,
-  StarFilled
+  StarFilled,
+  ArrowLeftRegular,
+  FolderRegular
 } from '@fluentui/react-icons'
-import { ArrowLeftRegular, FolderRegular } from '@fluentui/react-icons'
 import GameDetailsDialog from './GameDetailsDialog'
 import { useGameDialog } from '@renderer/hooks/useGameDialog'
 import { useCollections } from '@renderer/hooks/useCollections'
 import MirrorSelector from './MirrorSelector'
 import CollectionsDrawer from './CollectionsDrawer'
+import BatchActionBar from './BatchActionBar'
 
 // Column width constants
 const COLUMN_WIDTHS = {
+  SELECTION: 40,
   FAVORITE: 40,
   STATUS: 60,
   THUMBNAIL: 90,
@@ -79,6 +84,7 @@ const COLUMN_WIDTHS = {
 
 // Calculate fixed columns total width
 const FIXED_COLUMNS_WIDTH =
+  COLUMN_WIDTHS.SELECTION +
   COLUMN_WIDTHS.FAVORITE +
   COLUMN_WIDTHS.STATUS +
   COLUMN_WIDTHS.THUMBNAIL +
@@ -291,6 +297,22 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const [showObbConfirmDialog, setShowObbConfirmDialog] = useState<boolean>(false)
   const [obbFolderToConfirm, setObbFolderToConfirm] = useState<string | null>(null)
   const [isCollectionsDrawerOpen, setIsCollectionsDrawerOpen] = useState<boolean>(false)
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [batchCollectionDrawerOpen, setBatchCollectionDrawerOpen] = useState<boolean>(false)
+  const [selectedGameForCollection, setSelectedGameForCollection] = useState<string | null>(null)
+
+  // Get selected games from row selection
+  const selectedGames = useMemo(() => {
+    return Object.keys(rowSelection)
+      .filter((packageName) => rowSelection[packageName])
+      .map((packageName) => games.find((g) => g.packageName === packageName))
+      .filter((g): g is GameInfo => g !== undefined)
+  }, [rowSelection, games])
+
+  // Clear selection when filter changes
+  useEffect(() => {
+    setRowSelection({})
+  }, [activeFilter, activeCollection])
 
   const counts = useMemo(() => {
     const total = games.length
@@ -411,6 +433,35 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     )
 
     return [
+      {
+        id: 'select',
+        header: ({ table }) => (
+          <div className={styles.statusIconCell}>
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() ? 'mixed' : false)
+              }
+              onChange={(_, data) => table.toggleAllPageRowsSelected(!!data.checked)}
+              aria-label="Select all"
+            />
+          </div>
+        ),
+        size: COLUMN_WIDTHS.SELECTION,
+        enableResizing: false,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className={styles.statusIconCell}>
+            <Checkbox
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              onChange={(_, data) => row.toggleSelected(!!data.checked)}
+              aria-label="Select row"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )
+      },
       {
         id: 'favorite',
         header: '',
@@ -681,8 +732,12 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         isFavorite: false,
         collections: false
       },
-      columnSizing
+      columnSizing,
+      rowSelection
     },
+    enableRowSelection: true,
+    getRowId: (row) => row.packageName,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -1104,6 +1159,62 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     setShowInstallDialog(false)
     setInstallSuccess(null)
     setInstallStatusMessage('')
+  }, [])
+
+  // Batch action handlers
+  const handleBatchDownload = useCallback(async () => {
+    for (const game of selectedGames) {
+      await addDownloadToQueue(game)
+    }
+    setRowSelection({})
+  }, [selectedGames, addDownloadToQueue])
+
+  const handleBatchInstall = useCallback(async () => {
+    if (!selectedDevice) return
+
+    for (const game of selectedGames) {
+      const downloadInfo = game.releaseName ? downloadStatusMap.get(game.releaseName) : undefined
+      if (downloadInfo?.status === 'Completed') {
+        await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
+      }
+    }
+    setRowSelection({})
+  }, [selectedGames, selectedDevice, downloadStatusMap])
+
+  const handleBatchUninstall = useCallback(async () => {
+    if (!selectedDevice) return
+
+    const installedGames = selectedGames.filter((g) => g.isInstalled)
+    if (installedGames.length === 0) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to uninstall ${installedGames.length} game(s) from your device?`
+    )
+    if (!confirmed) return
+
+    setIsLoading(true)
+    try {
+      for (const game of installedGames) {
+        await window.api.adb.uninstallPackage(selectedDevice, game.packageName)
+      }
+      await loadPackages()
+    } finally {
+      setIsLoading(false)
+    }
+    setRowSelection({})
+  }, [selectedGames, selectedDevice, loadPackages])
+
+  const handleBatchAddToCollection = useCallback(() => {
+    if (selectedGames.length === 1) {
+      setSelectedGameForCollection(selectedGames[0].packageName)
+    } else {
+      setSelectedGameForCollection(null)
+    }
+    setBatchCollectionDrawerOpen(true)
+  }, [selectedGames])
+
+  const handleClearSelection = useCallback(() => {
+    setRowSelection({})
   }, [])
 
   const isBusy = adbLoading || loadingGames || isLoading || isManualInstalling
@@ -1621,6 +1732,28 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                 </DialogBody>
               </DialogSurface>
             </Dialog>
+
+            {/* Batch Collection Drawer */}
+            <CollectionsDrawer
+              open={batchCollectionDrawerOpen}
+              onClose={() => {
+                setBatchCollectionDrawerOpen(false)
+                setSelectedGameForCollection(null)
+              }}
+              selectedGameId={selectedGameForCollection}
+            />
+
+            {/* Batch Action Bar */}
+            <BatchActionBar
+              selectedGames={selectedGames}
+              onDownloadAll={handleBatchDownload}
+              onInstallAll={handleBatchInstall}
+              onUninstallAll={handleBatchUninstall}
+              onAddToCollection={handleBatchAddToCollection}
+              onClearSelection={handleClearSelection}
+              isConnected={isConnected}
+              isBusy={isBusy}
+            />
           </>
         )}
       </div>
