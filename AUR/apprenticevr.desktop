@@ -2,9 +2,9 @@
 Type=Application
 Name=ApprenticeVR
 Comment=A modern, cross-platform desktop application designed for managing and sideloading content onto Meta Quest devices
-Exec=apprenticevr %U
-Icon=apprenticevr
+Exec=forge %U
+Icon=forge
 Categories=Games;
 Terminal=false
-MimeType=x-scheme-handler/apprenticevr;
-StartupWMClass=apprenticevr 
+MimeType=x-scheme-handler/forge;
+StartupWMClass=forge 

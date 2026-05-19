@@ -3,5 +3,5 @@
 # Launcher script for ApprenticeVR fork
 # Runs the app in development mode
 
-cd /home/house/apprentice-vr/apprentice-vr
+cd /home/house/forge/forge
 VITE_ELECTRON_ARGS="--disable-gpu" pkill -f adb; pnpm dev

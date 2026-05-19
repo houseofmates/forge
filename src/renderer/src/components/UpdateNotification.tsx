@@ -303,7 +303,7 @@ export function UpdateNotification(): React.ReactElement | null {
                   onClick={() => window.api.updates?.openRepositoryPage?.()}
                   style={{ padding: '0', height: 'auto', minHeight: 'auto' }}
                 >
-                  GitHub repository (https://github.com/houseofmates/apprentice-vr)
+                  GitHub repository (https://github.com/houseofmates/forge)
                 </Button>{' '}
                 for full changelog and project details.
               </Text>
