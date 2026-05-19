@@ -1,4 +1,4 @@
-<h1 align="center">forge VR</h1>
+<h1 align="center">forge</h1>
 
 <h3 align="center">a modern, feature-rich quest VR game manager with a focus on organization, efficiency, and a premium user experience.</h3>
 
@@ -232,7 +232,7 @@ this project is provided as-is for personal use. please respect the original pro
 ---
 
 <div align="center">
-  <strong>forge vr</strong> — craft your perfect vr library.
+  <strong>forge</strong> — craft your perfect vr library.
 
   <sub>made with care for the quest community</sub>
 </div>
