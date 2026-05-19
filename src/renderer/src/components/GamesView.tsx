@@ -287,6 +287,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableContainerRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({})
   const [isEditingUserName, setIsEditingUserName] = useState<boolean>(false)
   const [editUserNameValue, setEditUserNameValue] = useState<string>('')
@@ -372,6 +373,25 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       unsubscribe()
     }
   }, [selectedDevice, loadPackages, games])
+
+  // Listen for keyboard shortcut events from AppLayout
+  useEffect(() => {
+    const handleFocusSearch = (): void => {
+      searchInputRef.current?.focus()
+    }
+
+    const handleRefreshGames = (): void => {
+      refreshGames()
+    }
+
+    window.addEventListener('focus-search', handleFocusSearch)
+    window.addEventListener('refresh-games', handleRefreshGames)
+
+    return () => {
+      window.removeEventListener('focus-search', handleFocusSearch)
+      window.removeEventListener('refresh-games', handleRefreshGames)
+    }
+  }, [refreshGames])
 
   const downloadStatusMap = useMemo(() => {
     const map = new Map<string, { status: string; progress: number }>()
@@ -1486,6 +1506,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         <div className="games-toolbar-right">
           <span className="game-count">{table.getFilteredRowModel().rows.length} displayed</span>
           <Input
+            ref={searchInputRef}
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(String(e.target.value))}
             placeholder="Search name/package..."

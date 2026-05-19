@@ -31,6 +31,8 @@ import { useSettings } from '../hooks/useSettings'
 import { useGames } from '../hooks/useGames'
 import { useLogs } from '../hooks/useLogs'
 import CollapsibleSection from './ui/CollapsibleSection'
+import { SHORTCUT_REGISTRY, formatShortcut } from '@renderer/hooks/useKeyboardShortcuts'
+import { KeyboardRegular } from '@fluentui/react-icons'
 
 // Supported speed units with conversion factors to KB/s
 const SPEED_UNITS = [
@@ -870,6 +872,49 @@ const Settings: React.FC = () => {
 
         {/* Log Upload Section */}
         <LogUploadSettings />
+
+        {/* Keyboard Shortcuts Section */}
+        <CollapsibleSection
+          title="keyboard shortcuts"
+          icon={<KeyboardRegular />}
+          defaultExpanded={false}
+        >
+          <div className={styles.sectionContent}>
+            <Table size="small" style={{ backgroundColor: '#0a0a0a' }}>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderCell style={{ backgroundColor: '#111111' }}>Shortcut</TableHeaderCell>
+                  <TableHeaderCell style={{ backgroundColor: '#111111' }}>Action</TableHeaderCell>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(SHORTCUT_REGISTRY).map(([key, shortcut]) => (
+                  <TableRow key={key}>
+                    <TableCell>
+                      <TableCellLayout>
+                        <span
+                          style={{
+                            fontFamily: 'monospace',
+                            backgroundColor: '#1a1a1a',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            color: '#f6b012'
+                          }}
+                        >
+                          {formatShortcut(shortcut)}
+                        </span>
+                      </TableCellLayout>
+                    </TableCell>
+                    <TableCell>
+                      <TableCellLayout>{shortcut.description}</TableCellLayout>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CollapsibleSection>
 
         {/* Blacklist Section */}
         <BlacklistSettings />

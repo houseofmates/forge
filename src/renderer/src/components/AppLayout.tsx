@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState, useCallback } from 'react'
 import { AdbProvider } from '../context/AdbProvider'
 import { GamesProvider } from '../context/GamesProvider'
 import DeviceList from './DeviceList'
@@ -42,6 +42,7 @@ import { useUpload } from '@renderer/hooks/useUpload'
 import { GameDialogProvider } from '@renderer/context/GameDialogProvider'
 import { CollectionsProvider } from '@renderer/context/CollectionsProvider'
 import pkmTheme from '../theme/pkmTheme'
+import { useKeyboardShortcuts, SHORTCUT_REGISTRY } from '@renderer/hooks/useKeyboardShortcuts'
 
 enum AppView {
   DEVICE_LIST,
@@ -314,6 +315,81 @@ const AppLayout: React.FC = () => {
   const handleBackToDeviceList = (): void => {
     setCurrentView(AppView.DEVICE_LIST)
   }
+
+  // Keyboard shortcut handlers
+  const handleFocusSearch = useCallback(() => {
+    // Emit custom event that GamesView can listen to
+    window.dispatchEvent(new CustomEvent('focus-search'))
+  }, [])
+
+  const handleToggleDownloads = useCallback(() => {
+    setIsDownloadsOpen((prev) => !prev)
+    setIsUploadsOpen(false)
+  }, [])
+
+  const handleToggleUploads = useCallback(() => {
+    setIsUploadsOpen((prev) => !prev)
+    setIsDownloadsOpen(false)
+  }, [])
+
+  const handleOpenSettings = useCallback(() => {
+    if (currentView === AppView.GAMES) {
+      setActiveTab('settings')
+    }
+  }, [currentView])
+
+  const handleGamesView = useCallback(() => {
+    if (currentView === AppView.GAMES) {
+      setActiveTab('games')
+    }
+  }, [currentView])
+
+  const handleEscape = useCallback(() => {
+    if (isDownloadsOpen) {
+      setIsDownloadsOpen(false)
+    } else if (isUploadsOpen) {
+      setIsUploadsOpen(false)
+    }
+  }, [isDownloadsOpen, isUploadsOpen])
+
+  const handleRefreshGames = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('refresh-games'))
+  }, [])
+
+  // Register keyboard shortcuts
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        ...SHORTCUT_REGISTRY.focusSearch,
+        action: handleFocusSearch
+      },
+      {
+        ...SHORTCUT_REGISTRY.toggleDownloads,
+        action: handleToggleDownloads
+      },
+      {
+        ...SHORTCUT_REGISTRY.toggleUploads,
+        action: handleToggleUploads
+      },
+      {
+        ...SHORTCUT_REGISTRY.openSettings,
+        action: handleOpenSettings
+      },
+      {
+        ...SHORTCUT_REGISTRY.gamesView,
+        action: handleGamesView
+      },
+      {
+        ...SHORTCUT_REGISTRY.escape,
+        action: handleEscape
+      },
+      {
+        ...SHORTCUT_REGISTRY.refreshGames,
+        action: handleRefreshGames
+      }
+    ],
+    enabled: currentView === AppView.GAMES
+  })
 
   const downloadQueueProgress = useMemo(() => {
     const activeDownloads = downloadQueue.filter((item) => item.status === 'Downloading')
