@@ -6,6 +6,8 @@ export interface CollectionsContextType {
   favorites: string[]
   isLoading: boolean
   error: string | null
+  activeCollection: Collection | null
+  setActiveCollection: (collection: Collection | null) => void
   // Favorites operations
   addToFavorites: (gameId: string) => Promise<boolean>
   removeFromFavorites: (gameId: string) => Promise<boolean>
@@ -34,6 +36,8 @@ const defaultContext: CollectionsContextType = {
   favorites: [],
   isLoading: true,
   error: null,
+  activeCollection: null,
+  setActiveCollection: () => {},
   addToFavorites: async () => false,
   removeFromFavorites: async () => false,
   toggleFavorite: async () => false,
@@ -59,6 +63,7 @@ export const CollectionsProvider: React.FC<CollectionsProviderProps> = ({ childr
   const [favorites, setFavorites] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeCollection, setActiveCollection] = useState<Collection | null>(null)
 
   const loadData = useCallback(async () => {
     try {
@@ -247,6 +252,8 @@ export const CollectionsProvider: React.FC<CollectionsProviderProps> = ({ childr
     favorites,
     isLoading,
     error,
+    activeCollection,
+    setActiveCollection,
     addToFavorites,
     removeFromFavorites,
     toggleFavorite,

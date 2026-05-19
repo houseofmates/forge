@@ -58,11 +58,12 @@ import {
   StarRegular,
   StarFilled
 } from '@fluentui/react-icons'
-import { ArrowLeftRegular } from '@fluentui/react-icons'
+import { ArrowLeftRegular, FolderRegular } from '@fluentui/react-icons'
 import GameDetailsDialog from './GameDetailsDialog'
 import { useGameDialog } from '@renderer/hooks/useGameDialog'
 import { useCollections } from '@renderer/hooks/useCollections'
 import MirrorSelector from './MirrorSelector'
+import CollectionsDrawer from './CollectionsDrawer'
 
 // Column width constants
 const COLUMN_WIDTHS = {
@@ -266,7 +267,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     deleteFiles
   } = useDownload()
 
-  const { toggleFavorite, isFavorite } = useCollections()
+  const { toggleFavorite, isFavorite, collections, setActiveCollection, activeCollection } =
+    useCollections()
 
   const styles = useStyles()
 
@@ -288,6 +290,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const [installSuccess, setInstallSuccess] = useState<boolean | null>(null)
   const [showObbConfirmDialog, setShowObbConfirmDialog] = useState<boolean>(false)
   const [obbFolderToConfirm, setObbFolderToConfirm] = useState<string | null>(null)
+  const [isCollectionsDrawerOpen, setIsCollectionsDrawerOpen] = useState<boolean>(false)
 
   const counts = useMemo(() => {
     const total = games.length
@@ -300,25 +303,39 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   useEffect(() => {
     setColumnFilters((prev) => {
       const otherFilters = prev.filter(
-        (f) => f.id !== 'isInstalled' && f.id !== 'hasUpdate' && f.id !== 'isFavorite'
+        (f) =>
+          f.id !== 'isInstalled' &&
+          f.id !== 'hasUpdate' &&
+          f.id !== 'isFavorite' &&
+          f.id !== 'collections'
       )
+
+      let newFilters = otherFilters
+      if (activeCollection) {
+        newFilters = [...newFilters, { id: 'collections', value: activeCollection.id }]
+      }
+
       switch (activeFilter) {
         case 'installed':
-          return [...otherFilters, { id: 'isInstalled', value: true }]
+          setActiveCollection(null)
+          return [...newFilters, { id: 'isInstalled', value: true }]
         case 'update':
+          setActiveCollection(null)
           return [
-            ...otherFilters,
+            ...newFilters,
             { id: 'isInstalled', value: true },
             { id: 'hasUpdate', value: true }
           ]
         case 'favorites':
-          return [...otherFilters, { id: 'isFavorite', value: true }]
+          setActiveCollection(null)
+          return [...newFilters, { id: 'isFavorite', value: true }]
         case 'all':
         default:
-          return otherFilters
+          setActiveCollection(null)
+          return newFilters
       }
     })
-  }, [activeFilter])
+  }, [activeFilter, activeCollection, setActiveCollection])
 
   useEffect(() => {
     const unsubscribe = window.api.adb.onInstallationCompleted((deviceId) => {
@@ -631,9 +648,21 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
           if (!filterValue) return true
           return isFavorite(row.original.packageName)
         }
+      },
+      {
+        id: 'collections',
+        header: 'Collections',
+        enableResizing: false,
+        accessorFn: (row) => collections.some((col) => col.gameIds.includes(row.packageName)),
+        filterFn: (row, _columnId, filterValue) => {
+          if (!filterValue) return true
+          const activeCollectionId = filterValue as string
+          const collection = collections.find((col) => col.id === activeCollectionId)
+          return collection ? collection.gameIds.includes(row.original.packageName) : false
+        }
       }
     ]
-  }, [downloadStatusMap, styles, tableWidth, isFavorite, toggleFavorite])
+  }, [downloadStatusMap, styles, tableWidth, isFavorite, toggleFavorite, collections])
 
   const table = useReactTable({
     data: games,
@@ -646,7 +675,12 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       sorting,
       globalFilter,
       columnFilters,
-      columnVisibility: { isInstalled: false, hasUpdate: false, isFavorite: false },
+      columnVisibility: {
+        isInstalled: false,
+        hasUpdate: false,
+        isFavorite: false,
+        collections: false
+      },
       columnSizing
     },
     onSortingChange: setSorting,
@@ -1276,11 +1310,22 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                 </MenuList>
               </MenuPopover>
             </Menu>
+            <Button
+              icon={<FolderRegular />}
+              onClick={() => setIsCollectionsDrawerOpen(true)}
+              disabled={isBusy}
+              title="Manage your game collections"
+            >
+              Collections
+            </Button>
             <span className="last-synced">Last synced: {formatDate(lastSyncTime)}</span>
             <div className="filter-buttons">
               <button
-                onClick={() => setActiveFilter('all')}
-                className={activeFilter === 'all' ? 'active' : ''}
+                onClick={() => {
+                  setActiveFilter('all')
+                  setActiveCollection(null)
+                }}
+                className={activeFilter === 'all' && !activeCollection ? 'active' : ''}
               >
                 All ({counts.total})
               </button>
@@ -1308,6 +1353,22 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                   </button>
                 </>
               )}
+              {collections.length > 0 && (
+                <span style={{ borderLeft: '1px solid #333', margin: '0 8px', height: '20px' }} />
+              )}
+              {collections.map((collection) => (
+                <button
+                  key={collection.id}
+                  onClick={() => {
+                    setActiveFilter('all')
+                    setActiveCollection(collection)
+                  }}
+                  className={activeCollection?.id === collection.id ? 'active' : ''}
+                  style={{ borderLeftColor: collection.color || '#f6b012' }}
+                >
+                  {collection.name} ({collection.gameIds.length})
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -1454,6 +1515,11 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                 isBusy={isBusy}
               />
             )}
+
+            <CollectionsDrawer
+              open={isCollectionsDrawerOpen}
+              onClose={() => setIsCollectionsDrawerOpen(false)}
+            />
 
             {/* Manual Installation Progress Dialog */}
             <Dialog

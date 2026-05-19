@@ -301,6 +301,46 @@
   transform: scale(0.98);
 }
 
+.collection-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px; /* Add some space from the main filter buttons */
+}
+
+.collection-filter-chips button {
+  padding: 6px 12px;
+  font-size: 0.85em;
+  background-color: #0a0a0a; /* Slightly darker background */
+  border: 1px solid #252525;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: all 200ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.collection-filter-chips button:hover {
+  background-color: #1a1a1a;
+  border-color: #3c9fdd; /* Blue hover for collections */
+  color: #3c9fdd;
+}
+
+.collection-filter-chips button.active {
+  background-color: #1a1a1a;
+  border-color: #f6b012;
+  color: #f6b012;
+  font-weight: 500;
+}
+
+.collection-filter-chips button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.collection-filter-chips button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 /* row styles */
 .row-installed .game-name-main {
   color: #22c55e;
