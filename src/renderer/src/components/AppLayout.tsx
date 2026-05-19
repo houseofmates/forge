@@ -43,6 +43,7 @@ import { GameDialogProvider } from '@renderer/context/GameDialogProvider'
 import { CollectionsProvider } from '@renderer/context/CollectionsProvider'
 import pkmTheme from '../theme/pkmTheme'
 import { useKeyboardShortcuts, SHORTCUT_REGISTRY } from '@renderer/hooks/useKeyboardShortcuts'
+import { ToastProvider } from './ui/ToastProvider'
 
 enum AppView {
   DEVICE_LIST,
@@ -498,194 +499,196 @@ const AppLayout: React.FC = () => {
 
   return (
     <FluentProvider theme={pkmTheme}>
-      <AdbProvider>
-        <GamesProvider>
-          <GameDialogProvider>
-            <div className={styles.root}>
-              <div className={styles.header}>
-                <div className={styles.headerContent}>
-                  <img alt="forge vr" className={styles.logo} src={electronLogo} />
-                  <span className={styles.appTitle}>forge vr</span>
-                  <span className={styles.versionBadge}>v2.0.0</span>
+      <ToastProvider>
+        <AdbProvider>
+          <GamesProvider>
+            <GameDialogProvider>
+              <div className={styles.root}>
+                <div className={styles.header}>
+                  <div className={styles.headerContent}>
+                    <img alt="forge vr" className={styles.logo} src={electronLogo} />
+                    <span className={styles.appTitle}>forge vr</span>
+                    <span className={styles.versionBadge}>v2.0.0</span>
+                  </div>
+                  <div className={styles.headerActions}>
+                    {currentView !== AppView.DEVICE_LIST && (
+                      <>
+                        {/* navigation tabs */}
+                        <Tooltip content="game library" relationship="label">
+                          <Button
+                            icon={<GamesIcon />}
+                            appearance={activeTab === 'games' ? 'primary' : 'subtle'}
+                            onClick={() => setActiveTab('games')}
+                            className={`${styles.navButton} ${activeTab === 'games' ? styles.navButtonActive : ''}`}
+                          >
+                            games
+                          </Button>
+                        </Tooltip>
+
+                        <Tooltip content="application settings" relationship="label">
+                          <Button
+                            icon={<SettingsRegular />}
+                            appearance={activeTab === 'settings' ? 'primary' : 'subtle'}
+                            onClick={() => setActiveTab('settings')}
+                            className={`${styles.navButton} ${activeTab === 'settings' ? styles.navButtonActive : ''}`}
+                          >
+                            settings
+                          </Button>
+                        </Tooltip>
+
+                        <Divider vertical style={{ height: '24px', margin: '0 8px' }} />
+
+                        {/* action buttons */}
+                        <Tooltip content="view downloads" relationship="label">
+                          <div style={{ position: 'relative', display: 'inline-flex' }}>
+                            <Button
+                              onClick={() => setIsDownloadsOpen(true)}
+                              icon={downloadButtonIcon}
+                              className={styles.actionButton}
+                            >
+                              {downloadButtonText}
+                            </Button>
+                            {downloadBadge && (
+                              <Badge
+                                size="small"
+                                appearance="filled"
+                                color="brand"
+                                className={styles.statusBadge}
+                                style={{ position: 'absolute', top: '-4px', right: '-4px' }}
+                              >
+                                {String(downloadBadge)}
+                              </Badge>
+                            )}
+                          </div>
+                        </Tooltip>
+
+                        <Tooltip content="view uploads" relationship="label">
+                          <div style={{ position: 'relative', display: 'inline-flex' }}>
+                            <Button
+                              onClick={() => setIsUploadsOpen(true)}
+                              icon={uploadButtonIcon}
+                              className={styles.actionButton}
+                            >
+                              {uploadButtonText}
+                            </Button>
+                            {uploadBadge && (
+                              <Badge
+                                size="small"
+                                appearance="filled"
+                                color="brand"
+                                className={styles.statusBadge}
+                                style={{ position: 'absolute', top: '-4px', right: '-4px' }}
+                              >
+                                {String(uploadBadge)}
+                              </Badge>
+                            )}
+                          </div>
+                        </Tooltip>
+
+                        <Tooltip content="about" relationship="label">
+                          <Button
+                            icon={<InfoRegular />}
+                            appearance="subtle"
+                            onClick={() =>
+                              window.open('https://github.com/houseofmates/forge-vr', '_blank')
+                            }
+                          />
+                        </Tooltip>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className={styles.headerActions}>
-                  {currentView !== AppView.DEVICE_LIST && (
-                    <>
-                      {/* navigation tabs */}
-                      <Tooltip content="game library" relationship="label">
+
+                <div className={styles.mainContent} id="mainContent">
+                  <MainContent
+                    currentView={currentView}
+                    activeTab={activeTab}
+                    onDeviceConnected={handleDeviceConnected}
+                    onSkipConnection={handleSkipConnection}
+                    onBackToDeviceList={handleBackToDeviceList}
+                  />
+                </div>
+
+                <UpdateNotification />
+
+                <Drawer
+                  type="overlay"
+                  separator
+                  open={isDownloadsOpen}
+                  onOpenChange={(_, { open }) => setIsDownloadsOpen(open)}
+                  position="end"
+                  style={{ width: '650px' }}
+                  mountNode={mountNodeRef.current}
+                >
+                  <DrawerHeader
+                    style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #252525' }}
+                  >
+                    <DrawerHeaderTitle
+                      action={
                         <Button
-                          icon={<GamesIcon />}
-                          appearance={activeTab === 'games' ? 'primary' : 'subtle'}
-                          onClick={() => setActiveTab('games')}
-                          className={`${styles.navButton} ${activeTab === 'games' ? styles.navButtonActive : ''}`}
-                        >
-                          games
-                        </Button>
-                      </Tooltip>
-
-                      <Tooltip content="application settings" relationship="label">
-                        <Button
-                          icon={<SettingsRegular />}
-                          appearance={activeTab === 'settings' ? 'primary' : 'subtle'}
-                          onClick={() => setActiveTab('settings')}
-                          className={`${styles.navButton} ${activeTab === 'settings' ? styles.navButtonActive : ''}`}
-                        >
-                          settings
-                        </Button>
-                      </Tooltip>
-
-                      <Divider vertical style={{ height: '24px', margin: '0 8px' }} />
-
-                      {/* action buttons */}
-                      <Tooltip content="view downloads" relationship="label">
-                        <div style={{ position: 'relative', display: 'inline-flex' }}>
-                          <Button
-                            onClick={() => setIsDownloadsOpen(true)}
-                            icon={downloadButtonIcon}
-                            className={styles.actionButton}
-                          >
-                            {downloadButtonText}
-                          </Button>
-                          {downloadBadge && (
-                            <Badge
-                              size="small"
-                              appearance="filled"
-                              color="brand"
-                              className={styles.statusBadge}
-                              style={{ position: 'absolute', top: '-4px', right: '-4px' }}
-                            >
-                              {String(downloadBadge)}
-                            </Badge>
-                          )}
-                        </div>
-                      </Tooltip>
-
-                      <Tooltip content="view uploads" relationship="label">
-                        <div style={{ position: 'relative', display: 'inline-flex' }}>
-                          <Button
-                            onClick={() => setIsUploadsOpen(true)}
-                            icon={uploadButtonIcon}
-                            className={styles.actionButton}
-                          >
-                            {uploadButtonText}
-                          </Button>
-                          {uploadBadge && (
-                            <Badge
-                              size="small"
-                              appearance="filled"
-                              color="brand"
-                              className={styles.statusBadge}
-                              style={{ position: 'absolute', top: '-4px', right: '-4px' }}
-                            >
-                              {String(uploadBadge)}
-                            </Badge>
-                          )}
-                        </div>
-                      </Tooltip>
-
-                      <Tooltip content="about" relationship="label">
-                        <Button
-                          icon={<InfoRegular />}
                           appearance="subtle"
-                          onClick={() =>
-                            window.open('https://github.com/houseofmates/forge-vr', '_blank')
-                          }
+                          aria-label="close"
+                          icon={<CloseIcon />}
+                          onClick={() => setIsDownloadsOpen(false)}
                         />
-                      </Tooltip>
-                    </>
-                  )}
-                </div>
-              </div>
+                      }
+                    >
+                      <span style={{ color: '#f6b012' }}>downloads</span>
+                    </DrawerHeaderTitle>
+                  </DrawerHeader>
+                  <DrawerBody style={{ backgroundColor: '#050505' }}>
+                    <DownloadsView onClose={() => setIsDownloadsOpen(false)} />
+                  </DrawerBody>
+                </Drawer>
 
-              <div className={styles.mainContent} id="mainContent">
-                <MainContent
-                  currentView={currentView}
-                  activeTab={activeTab}
-                  onDeviceConnected={handleDeviceConnected}
-                  onSkipConnection={handleSkipConnection}
-                  onBackToDeviceList={handleBackToDeviceList}
-                />
-              </div>
-
-              <UpdateNotification />
-
-              <Drawer
-                type="overlay"
-                separator
-                open={isDownloadsOpen}
-                onOpenChange={(_, { open }) => setIsDownloadsOpen(open)}
-                position="end"
-                style={{ width: '650px' }}
-                mountNode={mountNodeRef.current}
-              >
-                <DrawerHeader
-                  style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #252525' }}
+                <Drawer
+                  type="overlay"
+                  separator
+                  open={isUploadsOpen}
+                  onOpenChange={(_, { open }) => setIsUploadsOpen(open)}
+                  position="end"
+                  style={{ width: '650px' }}
+                  mountNode={mountNodeRef.current}
                 >
-                  <DrawerHeaderTitle
-                    action={
-                      <Button
-                        appearance="subtle"
-                        aria-label="close"
-                        icon={<CloseIcon />}
-                        onClick={() => setIsDownloadsOpen(false)}
-                      />
-                    }
+                  <DrawerHeader
+                    style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #252525' }}
                   >
-                    <span style={{ color: '#f6b012' }}>downloads</span>
-                  </DrawerHeaderTitle>
-                </DrawerHeader>
-                <DrawerBody style={{ backgroundColor: '#050505' }}>
-                  <DownloadsView onClose={() => setIsDownloadsOpen(false)} />
-                </DrawerBody>
-              </Drawer>
-
-              <Drawer
-                type="overlay"
-                separator
-                open={isUploadsOpen}
-                onOpenChange={(_, { open }) => setIsUploadsOpen(open)}
-                position="end"
-                style={{ width: '650px' }}
-                mountNode={mountNodeRef.current}
+                    <DrawerHeaderTitle
+                      action={
+                        <Button
+                          appearance="subtle"
+                          aria-label="close"
+                          icon={<CloseIcon />}
+                          onClick={() => setIsUploadsOpen(false)}
+                        />
+                      }
+                    >
+                      <span style={{ color: '#f6b012' }}>uploads</span>
+                    </DrawerHeaderTitle>
+                  </DrawerHeader>
+                  <DrawerBody style={{ backgroundColor: '#050505' }}>
+                    <UploadsView />
+                  </DrawerBody>
+                </Drawer>
+              </div>
+              <div
+                id="portal-parent"
+                style={{
+                  zIndex: 1000,
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  pointerEvents: 'none'
+                }}
               >
-                <DrawerHeader
-                  style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #252525' }}
-                >
-                  <DrawerHeaderTitle
-                    action={
-                      <Button
-                        appearance="subtle"
-                        aria-label="close"
-                        icon={<CloseIcon />}
-                        onClick={() => setIsUploadsOpen(false)}
-                      />
-                    }
-                  >
-                    <span style={{ color: '#f6b012' }}>uploads</span>
-                  </DrawerHeaderTitle>
-                </DrawerHeader>
-                <DrawerBody style={{ backgroundColor: '#050505' }}>
-                  <UploadsView />
-                </DrawerBody>
-              </Drawer>
-            </div>
-            <div
-              id="portal-parent"
-              style={{
-                zIndex: 1000,
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                pointerEvents: 'none'
-              }}
-            >
-              <div ref={mountNodeRef} id="portal" style={{ pointerEvents: 'auto' }}></div>
-            </div>
-          </GameDialogProvider>
-        </GamesProvider>
-      </AdbProvider>
+                <div ref={mountNodeRef} id="portal" style={{ pointerEvents: 'auto' }}></div>
+              </div>
+            </GameDialogProvider>
+          </GamesProvider>
+        </AdbProvider>
+      </ToastProvider>
     </FluentProvider>
   )
 }
