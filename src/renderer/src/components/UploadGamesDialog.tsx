@@ -76,7 +76,6 @@ const UploadGamesDialog: React.FC = () => {
     const selectedForUpload = uploadCandidates.filter(
       (candidate) => selectedCandidates[candidate.packageName]
     )
-    console.log('Games selected for upload:', selectedForUpload)
 
     setShowUploadDialog(false)
 
@@ -94,7 +93,6 @@ const UploadGamesDialog: React.FC = () => {
     const selectedForBlacklist = uploadCandidates.filter(
       (candidate) => selectedCandidates[candidate.packageName]
     )
-    console.log('Games selected for blacklist:', selectedForBlacklist)
 
     const closeAfterBlacklist = uploadCandidates.length === selectedForBlacklist.length
 
@@ -130,8 +128,9 @@ const UploadGamesDialog: React.FC = () => {
                 <TableRow>
                   <TableHeaderCell style={{ width: '80px' }}>
                     <Checkbox
-                      checked={headerCheckboxState.checked}
-                      indeterminate={headerCheckboxState.indeterminate}
+                      checked={
+                        headerCheckboxState.indeterminate ? 'mixed' : headerCheckboxState.checked
+                      }
                       onChange={(_event, data) => handleSelectAll(!!data.checked)}
                     />
                     Upload

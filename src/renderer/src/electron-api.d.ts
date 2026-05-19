@@ -10,7 +10,9 @@ import {
   DependencyAPIRenderer,
   LogsAPIRenderer,
   MirrorAPIRenderer,
-  WiFiBookmark
+  WiFiBookmark,
+  Collection,
+  CollectionsData
 } from '@shared/types'
 
 declare global {
@@ -40,6 +42,31 @@ declare global {
         add: (name: string, ipAddress: string, port: number) => Promise<boolean>
         remove: (id: string) => Promise<boolean>
         updateLastConnected: (id: string) => Promise<void>
+      }
+      collections: {
+        getAllData: () => Promise<CollectionsData>
+        getFavorites: () => Promise<string[]>
+        addToFavorites: (gameId: string) => Promise<boolean>
+        removeFromFavorites: (gameId: string) => Promise<boolean>
+        toggleFavorite: (gameId: string) => Promise<boolean>
+        isFavorite: (gameId: string) => Promise<boolean>
+        getCollections: () => Promise<Collection[]>
+        getCollection: (id: string) => Promise<Collection | null>
+        createCollection: (
+          name: string,
+          description?: string,
+          color?: string,
+          icon?: string
+        ) => Promise<Collection>
+        updateCollection: (
+          id: string,
+          updates: Partial<Omit<Collection, 'id' | 'createdDate'>>
+        ) => Promise<Collection | null>
+        deleteCollection: (id: string) => Promise<boolean>
+        addGameToCollection: (collectionId: string, gameId: string) => Promise<boolean>
+        removeGameFromCollection: (collectionId: string, gameId: string) => Promise<boolean>
+        getCollectionsForGame: (gameId: string) => Promise<Collection[]>
+        onCollectionsUpdated: (callback: (data: CollectionsData) => void) => () => void
       }
       onDependencyProgress: (
         callback: (status: DependencyStatus, progress: { name: string; percentage: number }) => void

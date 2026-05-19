@@ -30,11 +30,14 @@ import {
   InfoRegular,
   CheckmarkCircleRegular,
   VideoRegular,
-  BroomRegular as UninstallIcon
+  BroomRegular as UninstallIcon,
+  StarRegular,
+  StarFilled
 } from '@fluentui/react-icons'
 import placeholderImage from '../assets/images/game-placeholder.png'
 import YouTube from 'react-youtube'
 import { useGames } from '@renderer/hooks/useGames'
+import { useCollections } from '@renderer/hooks/useCollections'
 
 const useStyles = makeStyles({
   dialogContentLayout: {
@@ -87,7 +90,7 @@ const useStyles = makeStyles({
     whiteSpace: 'pre-wrap',
     maxHeight: '150px',
     overflowY: 'auto',
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: '#0a0a0a',
     padding: tokens.spacingVerticalS,
     borderRadius: tokens.borderRadiusMedium
   },
@@ -143,6 +146,28 @@ const useStyles = makeStyles({
   progressSection: {
     marginTop: tokens.spacingVerticalM,
     marginBottom: tokens.spacingVerticalM
+  },
+  dangerButton: {
+    backgroundColor: '#ef4444',
+    color: '#ffffff',
+    ':hover': {
+      backgroundColor: '#dc2626'
+    }
+  },
+  favoriteButton: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: tokens.spacingHorizontalS
+  },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: tokens.spacingHorizontalXS
   }
 })
 
@@ -183,10 +208,19 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
 }) => {
   const styles = useStyles()
   const { getTrailerVideoId: getTrailerVideoIdFromContext } = useGames()
+  const { toggleFavorite, isFavorite } = useCollections()
   const [currentGameNote, setCurrentGameNote] = useState<string | null>(null)
   const [loadingNote, setLoadingNote] = useState<boolean>(false)
   const [videoId, setVideoId] = useState<string | null>(null)
   const [loadingVideo, setLoadingVideo] = useState<boolean>(false)
+
+  const isGameFavorite = game ? isFavorite(game.packageName) : false
+
+  const handleToggleFavorite = (): void => {
+    if (game) {
+      toggleFavorite(game.packageName)
+    }
+  }
 
   // Fetch note when dialog opens or game changes
   useEffect(() => {
@@ -201,8 +235,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
           if (isMounted) {
             setCurrentGameNote(note)
           }
-        } catch (err) {
-          console.error(`Error fetching note for ${game.releaseName}:`, err)
+        } catch {
           if (isMounted) {
             setCurrentGameNote('Error loading note.')
           }
@@ -235,8 +268,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
         if (isMounted && videoId) {
           setVideoId(videoId)
         }
-      } catch (error) {
-        console.error('Error searching for game trailer:', error)
+      } catch {
+        // Failed to fetch trailer
       } finally {
         if (isMounted) {
           setLoadingVideo(false)
@@ -276,7 +309,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
     if (canCancel) {
       return (
         <Button
-          appearance="danger"
+          appearance="secondary"
+          className={styles.dangerButton}
           icon={<DismissRegular />}
           onClick={() => onCancelDownload(currentGame)}
           disabled={isBusy}
@@ -298,7 +332,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
             Retry
           </Button>
           <Button
-            appearance="danger"
+            appearance="secondary"
+            className={styles.dangerButton}
             icon={<DeleteRegular />}
             onClick={() => onDeleteDownloaded(currentGame)}
             disabled={isBusy}
@@ -322,7 +357,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
               Update
             </Button>
             <Button
-              appearance="danger"
+              appearance="secondary"
+              className={styles.dangerButton}
               icon={<UninstallIcon />}
               onClick={() => onUninstall(currentGame)}
               disabled={!isConnected || isBusy}
@@ -343,7 +379,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
               Reinstall
             </Button>
             <Button
-              appearance="danger"
+              appearance="secondary"
+              className={styles.dangerButton}
               icon={<UninstallIcon />}
               onClick={() => onUninstall(currentGame)}
               disabled={!isConnected || isBusy}
@@ -367,7 +404,8 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
             Install
           </Button>
           <Button
-            appearance="danger"
+            appearance="secondary"
+            className={styles.dangerButton}
             icon={<DeleteRegular />}
             onClick={() => onDeleteDownloaded(currentGame)}
             disabled={isBusy}
@@ -406,7 +444,21 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
         <DialogSurface mountNode={document.getElementById('portal')}>
           <DialogBody>
             <div className={styles.dialogHeader}>
-              <DialogTitle>{game?.name}</DialogTitle>
+              <div className={styles.titleRow}>
+                <button
+                  onClick={handleToggleFavorite}
+                  className={styles.favoriteButton}
+                  title={isGameFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  aria-label={isGameFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {isGameFavorite ? (
+                    <StarFilled fontSize={22} color="#f6b012" />
+                  ) : (
+                    <StarRegular fontSize={22} color="#666666" />
+                  )}
+                </button>
+                <DialogTitle>{game?.name}</DialogTitle>
+              </div>
               <Button
                 appearance="subtle"
                 icon={<DismissRegular />}
@@ -443,11 +495,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
                     <Text size={600} weight="semibold">
                       {game.name}
                     </Text>
-                    <Text
-                      size={300}
-                      weight="regular"
-                      style={{ color: tokens.colorNeutralForeground2 }}
-                    >
+                    <Text size={300} weight="regular" style={{ color: '#ffffff' }}>
                       {game.packageName}
                     </Text>
                     <div className={styles.badgesAndInfoContainer}>
@@ -493,7 +541,7 @@ const GameDetailsDialog: React.FC<GameDetailsDialogProps> = ({
                           {game.version ? `v${game.version}` : '-'}
                           <span
                             style={{
-                              color: tokens.colorNeutralForeground3,
+                              color: '#3c9fdd',
                               fontSize: 12,
                               fontWeight: 'bold'
                             }}

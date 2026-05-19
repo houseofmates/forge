@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  Card,
-  CardHeader,
   Text,
   Button,
   Input,
   makeStyles,
   tokens,
   Spinner,
-  Title2,
-  Subtitle1,
   Dropdown,
   Option,
   Table,
@@ -25,11 +21,18 @@ import {
   CheckmarkCircleRegular,
   InfoRegular,
   DeleteRegular,
-  ShareRegular
+  ShareRegular,
+  SettingsRegular,
+  ArrowDownloadRegular,
+  ShieldRegular,
+  DocumentRegular
 } from '@fluentui/react-icons'
 import { useSettings } from '../hooks/useSettings'
 import { useGames } from '../hooks/useGames'
 import { useLogs } from '../hooks/useLogs'
+import CollapsibleSection from './ui/CollapsibleSection'
+import { SHORTCUT_REGISTRY, formatShortcut } from '@renderer/hooks/useKeyboardShortcuts'
+import { KeyboardRegular } from '@fluentui/react-icons'
 
 // Supported speed units with conversion factors to KB/s
 const SPEED_UNITS = [
@@ -43,53 +46,56 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: tokens.spacingVerticalL,
     position: 'relative',
-    height: 'calc(100vh - 90px)', // Account for header height
+    height: 'calc(100dvh - 64px)',
     overflowY: 'auto',
     padding: tokens.spacingVerticalXL,
-    backgroundColor: tokens.colorNeutralBackground1
+    backgroundColor: '#050505'
   },
   contentContainer: {
-    maxWidth: '1200px',
+    maxWidth: '900px',
     width: '100%',
     margin: '0 auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalL
+    gap: tokens.spacingVerticalM
   },
   headerTitle: {
-    marginBottom: tokens.spacingVerticalXS
+    marginBottom: tokens.spacingVerticalXS,
+    color: '#f6b012',
+    fontSize: '24px',
+    fontWeight: 600
   },
   headerSubtitle: {
-    color: tokens.colorNeutralForeground2,
+    color: '#3c9fdd',
     display: 'block',
-    marginBottom: tokens.spacingVerticalL
+    marginBottom: tokens.spacingVerticalL,
+    fontSize: '14px'
   },
-  card: {
-    width: '100%',
-    boxShadow: tokens.shadow4,
-    borderRadius: tokens.borderRadiusMedium
-  },
-  cardContent: {
-    padding: tokens.spacingHorizontalL,
-    paddingBottom: tokens.spacingVerticalXL
+  sectionContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: tokens.spacingVerticalM,
+    paddingTop: tokens.spacingVerticalM
   },
   formRow: {
     display: 'flex',
     alignItems: 'center',
     marginTop: tokens.spacingVerticalM,
     gap: tokens.spacingHorizontalM,
-    width: '100%',
-    maxWidth: '800px'
+    width: '100%'
   },
   input: {
-    flexGrow: 1
+    flexGrow: 1,
+    backgroundColor: '#111111',
+    border: '1px solid #252525',
+    borderRadius: '6px'
   },
   error: {
-    color: tokens.colorPaletteRedForeground1,
+    color: '#ef4444',
     marginTop: tokens.spacingVerticalXS
   },
   success: {
-    color: tokens.colorPaletteGreenForeground1,
+    color: '#22c55e',
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalXS,
@@ -100,18 +106,15 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: tokens.spacingHorizontalXS,
     marginTop: tokens.spacingVerticalS,
-    color: tokens.colorNeutralForeground2
-  },
-  speedLimitSection: {
-    marginTop: tokens.spacingVerticalL
+    color: '#3c9fdd',
+    fontSize: '12px'
   },
   speedFormRow: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: tokens.spacingHorizontalM,
+    gap: tokens.spacingHorizontalL,
     marginTop: tokens.spacingVerticalM,
-    width: '100%',
-    maxWidth: '800px'
+    width: '100%'
   },
   speedControl: {
     display: 'flex',
@@ -125,25 +128,62 @@ const useStyles = makeStyles({
   },
   speedInput: {
     width: '140px',
-    flexGrow: 1
+    flexGrow: 1,
+    backgroundColor: '#111111',
+    border: '1px solid #252525'
   },
   unitDropdown: {
-    width: '80px',
-    minWidth: '80px'
+    width: '90px',
+    minWidth: '90px'
   },
   blacklistTable: {
     marginTop: tokens.spacingVerticalM,
     width: '100%',
-    maxWidth: '800px'
+    backgroundColor: '#0a0a0a',
+    borderRadius: '8px',
+    overflow: 'hidden'
   },
   emptyState: {
     marginTop: tokens.spacingVerticalL,
-    color: tokens.colorNeutralForeground2,
+    color: '#3c9fdd',
     textAlign: 'center',
     padding: tokens.spacingVerticalL
   },
   actionButton: {
-    minWidth: 'auto'
+    minWidth: 'auto',
+    backgroundColor: '#111111',
+    border: '1px solid #252525',
+    transition: 'all 200ms cubic-bezier(0.33, 1, 0.68, 1)',
+    ':hover': {
+      backgroundColor: '#1a1a1a',
+      borderBottomColor: '#f6b012',
+      borderTopColor: '#f6b012',
+      borderLeftColor: '#f6b012',
+      borderRightColor: '#f6b012',
+      color: '#f6b012'
+    }
+  },
+  primaryButton: {
+    backgroundColor: '#f6b012',
+    color: '#050505',
+    fontWeight: 500,
+    transition: 'all 200ms cubic-bezier(0.33, 1, 0.68, 1)',
+    ':hover': {
+      backgroundColor: '#f9c042'
+    },
+    ':active': {
+      transform: 'scale(0.98)'
+    }
+  },
+  sectionLabel: {
+    color: '#f6b012',
+    fontWeight: 500,
+    marginBottom: tokens.spacingVerticalXS
+  },
+  sectionDescription: {
+    color: '#ffffff',
+    marginBottom: tokens.spacingVerticalM,
+    fontSize: '13px'
   }
 })
 
@@ -163,9 +203,8 @@ const BlacklistSettings: React.FC = () => {
       setError(null)
       const games = await getBlacklistGames()
       setBlacklistGames(games)
-    } catch (err) {
-      console.error('Error loading blacklisted games:', err)
-      setError('Failed to load blacklisted games')
+    } catch {
+      setError('failed to load blacklisted games')
     } finally {
       setIsLoading(false)
     }
@@ -186,48 +225,59 @@ const BlacklistSettings: React.FC = () => {
       setTimeout(() => {
         setRemoveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error removing game from blacklist:', err)
-      setError('Failed to remove game from blacklist')
+    } catch {
+      setError('failed to remove game from blacklist')
     }
   }
 
   return (
-    <Card className={styles.card}>
-      <CardHeader description={<Subtitle1 weight="semibold">Blacklisted Games</Subtitle1>} />
-      <div className={styles.cardContent}>
-        <Text>Manage games that will not prompt for uploads</Text>
+    <CollapsibleSection
+      title="blacklisted games"
+      subtitle={`${blacklistGames.length} games`}
+      icon={<ShieldRegular style={{ color: '#f6b012' }} />}
+    >
+      <div className={styles.sectionContent}>
+        <Text className={styles.sectionDescription}>
+          manage games that will not prompt for uploads
+        </Text>
 
         {isLoading ? (
           <div
             style={{ display: 'flex', justifyContent: 'center', padding: tokens.spacingVerticalL }}
           >
-            <Spinner size="small" label="Loading blacklisted games..." />
+            <Spinner size="small" label="loading blacklisted games..." />
           </div>
         ) : (
           <>
             {blacklistGames.length === 0 ? (
               <div className={styles.emptyState}>
-                <Text>No blacklisted games found</Text>
+                <Text>no blacklisted games found</Text>
               </div>
             ) : (
               <Table className={styles.blacklistTable}>
                 <TableHeader>
-                  <TableRow>
-                    <TableHeaderCell>Package Name</TableHeaderCell>
-                    <TableHeaderCell>Version</TableHeaderCell>
-                    <TableHeaderCell style={{ width: '100px' }}>Actions</TableHeaderCell>
+                  <TableRow style={{ backgroundColor: '#0a0a0a' }}>
+                    <TableHeaderCell style={{ color: '#f6b012' }}>package name</TableHeaderCell>
+                    <TableHeaderCell style={{ color: '#f6b012' }}>version</TableHeaderCell>
+                    <TableHeaderCell style={{ width: '100px', color: '#f6b012' }}>
+                      actions
+                    </TableHeaderCell>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {blacklistGames.map((game) => (
-                    <TableRow key={`${game.packageName}-${game.version}`}>
+                    <TableRow
+                      key={`${game.packageName}-${game.version}`}
+                      style={{ backgroundColor: '#111111' }}
+                    >
                       <TableCell>
-                        <TableCellLayout>{game.packageName}</TableCellLayout>
+                        <TableCellLayout style={{ color: '#ffffff' }}>
+                          {game.packageName}
+                        </TableCellLayout>
                       </TableCell>
                       <TableCell>
-                        <TableCellLayout>
-                          {game.version === 'any' ? 'All Versions' : game.version}
+                        <TableCellLayout style={{ color: '#3c9fdd' }}>
+                          {game.version === 'any' ? 'all versions' : game.version}
                         </TableCellLayout>
                       </TableCell>
                       <TableCell>
@@ -236,7 +286,7 @@ const BlacklistSettings: React.FC = () => {
                           appearance="subtle"
                           className={styles.actionButton}
                           onClick={() => handleRemoveFromBlacklist(game.packageName)}
-                          aria-label="Remove from blacklist"
+                          aria-label="remove from blacklist"
                         />
                       </TableCell>
                     </TableRow>
@@ -249,13 +299,13 @@ const BlacklistSettings: React.FC = () => {
             {removeSuccess && (
               <Text className={styles.success}>
                 <CheckmarkCircleRegular />
-                Game removed from blacklist successfully
+                game removed from blacklist successfully
               </Text>
             )}
           </>
         )}
       </div>
-    </Card>
+    </CollapsibleSection>
   )
 }
 
@@ -289,10 +339,15 @@ const LogUploadSettings: React.FC = () => {
   }
 
   return (
-    <Card className={styles.card}>
-      <CardHeader description={<Subtitle1 weight="semibold">Log Upload</Subtitle1>} />
-      <div className={styles.cardContent}>
-        <Text>Upload the current log file to https://catbox.moe for sharing with support</Text>
+    <CollapsibleSection
+      title="log upload"
+      subtitle="share logs for support"
+      icon={<DocumentRegular style={{ color: '#f6b012' }} />}
+    >
+      <div className={styles.sectionContent}>
+        <Text className={styles.sectionDescription}>
+          upload the current log file to catbox.moe for sharing with support
+        </Text>
 
         <div className={styles.formRow}>
           <Button
@@ -301,8 +356,9 @@ const LogUploadSettings: React.FC = () => {
             size="large"
             disabled={isUploading}
             icon={<ShareRegular />}
+            className={styles.primaryButton}
           >
-            {isUploading ? 'Uploading...' : 'Upload Current Log'}
+            {isUploading ? 'uploading...' : 'upload current log'}
           </Button>
         </div>
 
@@ -312,22 +368,28 @@ const LogUploadSettings: React.FC = () => {
           <div className={styles.success}>
             <CheckmarkCircleRegular />
             <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalS }}>
-              <Text>Log uploaded successfully!</Text>
+              <Text>log uploaded successfully!</Text>
 
               <div
                 style={{ display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalXS }}
               >
-                <Text weight="semibold">URL:</Text>
+                <Text weight="semibold" style={{ color: '#f6b012' }}>
+                  url:
+                </Text>
                 <div
                   style={{ display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalS }}
                 >
                   <Input
                     value={shareableUrl}
                     readOnly
-                    style={{ flexGrow: 1, fontFamily: 'monospace', fontSize: '12px' }}
+                    className={styles.input}
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: '12px'
+                    }}
                   />
-                  <Button onClick={handleCopyUrl} size="small" appearance="secondary">
-                    Copy URL
+                  <Button onClick={handleCopyUrl} size="small" className={styles.actionButton}>
+                    copy url
                   </Button>
                 </div>
               </div>
@@ -340,7 +402,9 @@ const LogUploadSettings: React.FC = () => {
                     gap: tokens.spacingVerticalXS
                   }}
                 >
-                  <Text weight="semibold">Password:</Text>
+                  <Text weight="semibold" style={{ color: '#f6b012' }}>
+                    password:
+                  </Text>
                   <div
                     style={{
                       display: 'flex',
@@ -351,15 +415,20 @@ const LogUploadSettings: React.FC = () => {
                     <Input
                       value={password}
                       readOnly
+                      className={styles.input}
                       style={{
                         width: '200px',
-                        fontFamily: 'monospace',
+                        fontFamily: "'JetBrains Mono', monospace",
                         fontSize: '14px',
                         fontWeight: 'bold'
                       }}
                     />
-                    <Button onClick={handleCopyPassword} size="small" appearance="secondary">
-                      Copy Password
+                    <Button
+                      onClick={handleCopyPassword}
+                      size="small"
+                      className={styles.actionButton}
+                    >
+                      copy password
                     </Button>
                   </div>
                 </div>
@@ -370,11 +439,11 @@ const LogUploadSettings: React.FC = () => {
 
         <Text className={styles.hint}>
           <InfoRegular />
-          The uploaded log file will be available on catbox.moe. Share only the URL with support for
+          the uploaded log file will be available on catbox.moe. share only the url with support for
           troubleshooting.
         </Text>
       </div>
-    </Card>
+    </CollapsibleSection>
   )
 }
 
@@ -435,7 +504,7 @@ const Settings: React.FC = () => {
 
   const handleSaveDownloadPath = async (): Promise<void> => {
     if (!editedDownloadPath) {
-      setLocalError('Download path cannot be empty')
+      setLocalError('download path cannot be empty')
       return
     }
 
@@ -451,9 +520,8 @@ const Settings: React.FC = () => {
       setTimeout(() => {
         setSaveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error saving download path:', err)
-      setLocalError('Failed to save download path')
+    } catch {
+      setLocalError('failed to save download path')
     }
   }
 
@@ -473,7 +541,7 @@ const Settings: React.FC = () => {
       } else {
         const inputValue = parseFloat(downloadSpeedInput)
         if (isNaN(inputValue)) {
-          setLocalError('Please enter valid numbers for speed limits')
+          setLocalError('please enter valid numbers for speed limits')
           return
         }
         const factor = SPEED_UNITS.find((u) => u.value === downloadSpeedUnit)?.factor || 1
@@ -487,7 +555,7 @@ const Settings: React.FC = () => {
       } else {
         const inputValue = parseFloat(uploadSpeedInput)
         if (isNaN(inputValue)) {
-          setLocalError('Please enter valid numbers for speed limits')
+          setLocalError('please enter valid numbers for speed limits')
           return
         }
         const factor = SPEED_UNITS.find((u) => u.value === uploadSpeedUnit)?.factor || 1
@@ -512,9 +580,8 @@ const Settings: React.FC = () => {
       setTimeout(() => {
         setSaveSuccess(false)
       }, 3000)
-    } catch (err) {
-      console.error('Error saving speed limits:', err)
-      setLocalError('Failed to save speed limits')
+    } catch {
+      setLocalError('failed to save speed limits')
     }
   }
 
@@ -524,23 +591,20 @@ const Settings: React.FC = () => {
       if (selectedPath) {
         setEditedDownloadPath(selectedPath)
       }
-    } catch (err) {
-      console.error('Error selecting folder:', err)
-      setLocalError('Failed to select folder')
+    } catch {
+      setLocalError('failed to select folder')
     }
   }
 
   // Handle unit conversion when dropdown changes
   const handleDownloadUnitChange = (newUnit: string): void => {
     if (!downloadSpeedInput.trim()) {
-      // If input is empty, just change the unit
       setDownloadSpeedUnit(newUnit)
       return
     }
 
     const currentValue = parseFloat(downloadSpeedInput)
     if (isNaN(currentValue)) {
-      // If current input is not a valid number, just change the unit
       setDownloadSpeedUnit(newUnit)
       return
     }
@@ -558,7 +622,6 @@ const Settings: React.FC = () => {
       if (downloadSpeedUnit === 'kbps') {
         originalDownloadKbps.current = currentValue
       } else {
-        // Convert from current unit to KB/s
         originalDownloadKbps.current = currentValue * currentUnitValue.factor
       }
     }
@@ -570,11 +633,9 @@ const Settings: React.FC = () => {
       // Format based on the unit
       let formattedValue: string
       if (newUnit === 'mbps') {
-        // For MB/s, show up to 2 decimal places, but trim trailing zeros
         formattedValue = valueInNewUnit.toFixed(2).replace(/\.?0+$/, '')
         if (formattedValue.endsWith('.')) formattedValue = formattedValue.slice(0, -1)
       } else {
-        // For KB/s, show as integer
         formattedValue = Math.round(valueInNewUnit).toString()
       }
 
@@ -586,14 +647,12 @@ const Settings: React.FC = () => {
 
   const handleUploadUnitChange = (newUnit: string): void => {
     if (!uploadSpeedInput.trim()) {
-      // If input is empty, just change the unit
       setUploadSpeedUnit(newUnit)
       return
     }
 
     const currentValue = parseFloat(uploadSpeedInput)
     if (isNaN(currentValue)) {
-      // If current input is not a valid number, just change the unit
       setUploadSpeedUnit(newUnit)
       return
     }
@@ -606,28 +665,22 @@ const Settings: React.FC = () => {
       return
     }
 
-    // If this is the first unit change, store the original KB/s value
     if (originalUploadKbps.current === null) {
       if (uploadSpeedUnit === 'kbps') {
         originalUploadKbps.current = currentValue
       } else {
-        // Convert from current unit to KB/s
         originalUploadKbps.current = currentValue * currentUnitValue.factor
       }
     }
 
-    // Use the original KB/s value for conversions to prevent rounding errors
     if (originalUploadKbps.current !== null) {
       const valueInNewUnit = originalUploadKbps.current / newUnitValue.factor
 
-      // Format based on the unit
       let formattedValue: string
       if (newUnit === 'mbps') {
-        // For MB/s, show up to 2 decimal places, but trim trailing zeros
         formattedValue = valueInNewUnit.toFixed(2).replace(/\.?0+$/, '')
         if (formattedValue.endsWith('.')) formattedValue = formattedValue.slice(0, -1)
       } else {
-        // For KB/s, show as integer
         formattedValue = Math.round(valueInNewUnit).toString()
       }
 
@@ -641,7 +694,6 @@ const Settings: React.FC = () => {
   const handleDownloadInputChange = (value: string): void => {
     setDownloadSpeedInput(value.replace(/[^0-9.]/g, ''))
 
-    // If the input is valid, update the original KB/s value
     const numValue = parseFloat(value)
     if (!isNaN(numValue)) {
       if (downloadSpeedUnit === 'kbps') {
@@ -658,7 +710,6 @@ const Settings: React.FC = () => {
   const handleUploadInputChange = (value: string): void => {
     setUploadSpeedInput(value.replace(/[^0-9.]/g, ''))
 
-    // If the input is valid, update the original KB/s value
     const numValue = parseFloat(value)
     if (!isNaN(numValue)) {
       if (uploadSpeedUnit === 'kbps') {
@@ -676,134 +727,207 @@ const Settings: React.FC = () => {
     <div className={styles.root}>
       <div className={styles.contentContainer}>
         <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacingHorizontalM }}>
-          <Title2 className={styles.headerTitle}>Application Settings</Title2>
-          {isLoading && <Spinner size="large" label="Loading settings..." />}
+          <SettingsRegular style={{ color: '#f6b012', fontSize: '28px' }} />
+          <h2 className={styles.headerTitle}>settings</h2>
+          {isLoading && <Spinner size="small" />}
         </div>
         <Text as="p" className={styles.headerSubtitle}>
-          Configure application preferences and manage your downloads
+          configure application preferences and manage your downloads
         </Text>
 
-        <LogUploadSettings />
-
-        <Card className={styles.card}>
-          <CardHeader description={<Subtitle1 weight="semibold">Download Settings</Subtitle1>} />
-          <div className={styles.cardContent}>
-            <Text>Set where your games will be downloaded and stored on your device</Text>
+        {/* Download Settings Section */}
+        <CollapsibleSection
+          title="download settings"
+          subtitle="storage & location"
+          icon={<FolderOpenRegular style={{ color: '#f6b012' }} />}
+          defaultExpanded={true}
+        >
+          <div className={styles.sectionContent}>
+            <Text className={styles.sectionDescription}>
+              set where your games will be downloaded and stored on your device
+            </Text>
 
             <div className={styles.formRow}>
               <Input
                 className={styles.input}
                 value={editedDownloadPath}
                 onChange={(_, data) => setEditedDownloadPath(data.value)}
-                placeholder="Download path"
+                placeholder="download path"
                 contentAfter={
                   <Button
                     icon={<FolderOpenRegular />}
                     onClick={handleSelectFolder}
-                    aria-label="Browse folders"
+                    aria-label="browse folders"
+                    appearance="subtle"
                   />
                 }
                 size="large"
               />
-              <Button onClick={handleSaveDownloadPath} appearance="primary" size="large">
-                Save Path
+              <Button
+                onClick={handleSaveDownloadPath}
+                appearance="primary"
+                size="large"
+                className={styles.primaryButton}
+              >
+                save path
               </Button>
             </div>
+          </div>
+        </CollapsibleSection>
 
-            <div className={styles.speedLimitSection}>
-              <Text>Configure download and upload speed limits</Text>
+        {/* Speed Limits Section */}
+        <CollapsibleSection
+          title="speed limits"
+          subtitle="bandwidth control"
+          icon={<ArrowDownloadRegular style={{ color: '#f6b012' }} />}
+        >
+          <div className={styles.sectionContent}>
+            <Text className={styles.sectionDescription}>
+              configure download and upload speed limits to manage bandwidth usage
+            </Text>
 
-              <div className={styles.speedFormRow}>
-                <div className={styles.speedControl}>
-                  <Text>Download Speed Limit</Text>
-                  <div className={styles.speedInputGroup}>
-                    <Input
-                      className={styles.speedInput}
-                      value={downloadSpeedInput}
-                      onChange={(_, data) => handleDownloadInputChange(data.value)}
-                      placeholder="Unlimited"
-                    />
-                    <Dropdown
-                      className={styles.unitDropdown}
-                      value={SPEED_UNITS.find((u) => u.value === downloadSpeedUnit)?.label}
-                      label="Download Speed Limit Unit"
-                      selectedOptions={[downloadSpeedUnit]}
-                      onOptionSelect={(_, data) => {
-                        if (data.optionValue) {
-                          handleDownloadUnitChange(data.optionValue)
-                        }
-                      }}
-                      mountNode={document.getElementById('portal')}
-                    >
-                      {SPEED_UNITS.map((unit) => (
-                        <Option key={unit.value} value={unit.value} text={unit.label}>
-                          {unit.label}
-                        </Option>
-                      ))}
-                    </Dropdown>
-                  </div>
-                  <Text className={styles.hint}>
-                    <InfoRegular />
-                    Leave empty for unlimited download speed
-                  </Text>
+            <div className={styles.speedFormRow}>
+              <div className={styles.speedControl}>
+                <Text className={styles.sectionLabel}>download speed limit</Text>
+                <div className={styles.speedInputGroup}>
+                  <Input
+                    className={styles.speedInput}
+                    value={downloadSpeedInput}
+                    onChange={(_, data) => handleDownloadInputChange(data.value)}
+                    placeholder="unlimited"
+                  />
+                  <Dropdown
+                    className={styles.unitDropdown}
+                    value={SPEED_UNITS.find((u) => u.value === downloadSpeedUnit)?.label}
+                    selectedOptions={[downloadSpeedUnit]}
+                    onOptionSelect={(_, data) => {
+                      if (data.optionValue) {
+                        handleDownloadUnitChange(data.optionValue)
+                      }
+                    }}
+                    mountNode={document.getElementById('portal')}
+                  >
+                    {SPEED_UNITS.map((unit) => (
+                      <Option key={unit.value} value={unit.value} text={unit.label}>
+                        {unit.label}
+                      </Option>
+                    ))}
+                  </Dropdown>
                 </div>
-
-                <div className={styles.speedControl}>
-                  <Text>Upload Speed Limit</Text>
-                  <div className={styles.speedInputGroup}>
-                    <Input
-                      className={styles.speedInput}
-                      value={uploadSpeedInput}
-                      onChange={(_, data) => handleUploadInputChange(data.value)}
-                      placeholder="Unlimited"
-                    />
-                    <Dropdown
-                      className={styles.unitDropdown}
-                      value={SPEED_UNITS.find((u) => u.value === uploadSpeedUnit)?.label}
-                      selectedOptions={[uploadSpeedUnit]}
-                      onOptionSelect={(_, data) => {
-                        if (data.optionValue) {
-                          handleUploadUnitChange(data.optionValue)
-                        }
-                      }}
-                      mountNode={document.getElementById('portal')}
-                    >
-                      {SPEED_UNITS.map((unit) => (
-                        <Option key={unit.value} value={unit.value} text={unit.label}>
-                          {unit.label}
-                        </Option>
-                      ))}
-                    </Dropdown>
-                  </div>
-                  <Text className={styles.hint}>
-                    <InfoRegular />
-                    Leave empty for unlimited upload speed
-                  </Text>
-                </div>
+                <Text className={styles.hint}>
+                  <InfoRegular />
+                  leave empty for unlimited download speed
+                </Text>
               </div>
 
-              <div
-                className={styles.formRow}
-                style={{ justifyContent: 'flex-end', marginTop: tokens.spacingVerticalM }}
-              >
-                <Button onClick={handleSaveSpeedLimits} appearance="primary" size="large">
-                  Save Speed Limits
-                </Button>
+              <div className={styles.speedControl}>
+                <Text className={styles.sectionLabel}>upload speed limit</Text>
+                <div className={styles.speedInputGroup}>
+                  <Input
+                    className={styles.speedInput}
+                    value={uploadSpeedInput}
+                    onChange={(_, data) => handleUploadInputChange(data.value)}
+                    placeholder="unlimited"
+                  />
+                  <Dropdown
+                    className={styles.unitDropdown}
+                    value={SPEED_UNITS.find((u) => u.value === uploadSpeedUnit)?.label}
+                    selectedOptions={[uploadSpeedUnit]}
+                    onOptionSelect={(_, data) => {
+                      if (data.optionValue) {
+                        handleUploadUnitChange(data.optionValue)
+                      }
+                    }}
+                    mountNode={document.getElementById('portal')}
+                  >
+                    {SPEED_UNITS.map((unit) => (
+                      <Option key={unit.value} value={unit.value} text={unit.label}>
+                        {unit.label}
+                      </Option>
+                    ))}
+                  </Dropdown>
+                </div>
+                <Text className={styles.hint}>
+                  <InfoRegular />
+                  leave empty for unlimited upload speed
+                </Text>
               </div>
             </div>
 
-            {(error || localError) && <Text className={styles.error}>{error || localError}</Text>}
-
-            {saveSuccess && (
-              <Text className={styles.success}>
-                <CheckmarkCircleRegular />
-                Settings saved successfully
-              </Text>
-            )}
+            <div
+              className={styles.formRow}
+              style={{ justifyContent: 'flex-end', marginTop: tokens.spacingVerticalM }}
+            >
+              <Button
+                onClick={handleSaveSpeedLimits}
+                appearance="primary"
+                size="large"
+                className={styles.primaryButton}
+              >
+                save speed limits
+              </Button>
+            </div>
           </div>
-        </Card>
+        </CollapsibleSection>
 
+        {/* Log Upload Section */}
+        <LogUploadSettings />
+
+        {/* Keyboard Shortcuts Section */}
+        <CollapsibleSection
+          title="keyboard shortcuts"
+          icon={<KeyboardRegular />}
+          defaultExpanded={false}
+        >
+          <div className={styles.sectionContent}>
+            <Table size="small" style={{ backgroundColor: '#0a0a0a' }}>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderCell style={{ backgroundColor: '#111111' }}>Shortcut</TableHeaderCell>
+                  <TableHeaderCell style={{ backgroundColor: '#111111' }}>Action</TableHeaderCell>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(SHORTCUT_REGISTRY).map(([key, shortcut]) => (
+                  <TableRow key={key}>
+                    <TableCell>
+                      <TableCellLayout>
+                        <span
+                          style={{
+                            fontFamily: 'monospace',
+                            backgroundColor: '#1a1a1a',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            color: '#f6b012'
+                          }}
+                        >
+                          {formatShortcut(shortcut)}
+                        </span>
+                      </TableCellLayout>
+                    </TableCell>
+                    <TableCell>
+                      <TableCellLayout>{shortcut.description}</TableCellLayout>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CollapsibleSection>
+
+        {/* Blacklist Section */}
         <BlacklistSettings />
+
+        {/* Status Messages */}
+        {(error || localError) && <Text className={styles.error}>{error || localError}</Text>}
+
+        {saveSuccess && (
+          <Text className={styles.success}>
+            <CheckmarkCircleRegular />
+            settings saved successfully
+          </Text>
+        )}
       </div>
     </div>
   )

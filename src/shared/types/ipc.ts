@@ -12,7 +12,9 @@ import {
   BlacklistEntry,
   Mirror,
   MirrorTestResult,
-  WiFiBookmark
+  WiFiBookmark,
+  Collection,
+  CollectionsData
 } from './index'
 
 // Define types for all IPC channels between renderer and main
@@ -124,6 +126,34 @@ export interface IPCChannels {
   // Manual installation channels
   'downloads:install-manual': DefineChannel<[filePath: string, deviceId: string], boolean>
   'downloads:copy-obb-folder': DefineChannel<[folderPath: string, deviceId: string], boolean>
+
+  // Collections and favorites channels
+  'collections:get-all-data': DefineChannel<[], CollectionsData>
+  'collections:get-favorites': DefineChannel<[], string[]>
+  'collections:add-to-favorites': DefineChannel<[gameId: string], boolean>
+  'collections:remove-from-favorites': DefineChannel<[gameId: string], boolean>
+  'collections:toggle-favorite': DefineChannel<[gameId: string], boolean>
+  'collections:is-favorite': DefineChannel<[gameId: string], boolean>
+  'collections:get-collections': DefineChannel<[], Collection[]>
+  'collections:get-collection': DefineChannel<[id: string], Collection | null>
+  'collections:create-collection': DefineChannel<
+    [name: string, description?: string, color?: string, icon?: string],
+    Collection
+  >
+  'collections:update-collection': DefineChannel<
+    [id: string, updates: Partial<Omit<Collection, 'id' | 'createdDate'>>],
+    Collection | null
+  >
+  'collections:delete-collection': DefineChannel<[id: string], boolean>
+  'collections:add-game-to-collection': DefineChannel<
+    [collectionId: string, gameId: string],
+    boolean
+  >
+  'collections:remove-game-from-collection': DefineChannel<
+    [collectionId: string, gameId: string],
+    boolean
+  >
+  'collections:get-collections-for-game': DefineChannel<[gameId: string], Collection[]>
 }
 
 // Types for send (no response) channels
@@ -165,4 +195,5 @@ export interface IPCEvents {
   'update:update-downloaded': [updateInfo: UpdateInfo]
   'mirrors:test-progress': [id: string, status: 'testing' | 'success' | 'failed', error?: string]
   'mirrors:mirrors-updated': [mirrors: Mirror[]]
+  'collections:updated': [data: CollectionsData]
 }

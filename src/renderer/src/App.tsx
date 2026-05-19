@@ -1,4 +1,5 @@
 import AppLayout from './components/AppLayout'
+import './assets/base.css'
 import './assets/device-list.css'
 import './assets/games-view.css'
 import './assets/app.css'

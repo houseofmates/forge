@@ -1,11 +1,13 @@
+/* games view - pkm aesthetic */
+
 .games-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e0e0e0;
-  flex-shrink: 0; /* Prevent header from shrinking */
+  border-bottom: 1px solid #252525;
+  flex-shrink: 0;
 }
 
 .games-header-left {
@@ -15,7 +17,7 @@
 
 .games-header h2 {
   margin: 0;
-  color: #333;
+  color: #f6b012;
   font-size: 1.5em;
 }
 
@@ -27,11 +29,11 @@
 .connected-device {
   margin-right: 16px;
   font-size: 0.9em;
-  color: #3c4043;
+  color: #3c9fdd;
 }
 
 .device-warning {
-  color: #d93025;
+  color: #ef4444;
   font-size: 0.9em;
 }
 
@@ -39,26 +41,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e0e0e0;
-  flex-shrink: 0; /* Prevent toolbar from shrinking */
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #252525;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .games-toolbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .last-synced {
-  color: var(--colorNeutralForeground2);
-  font-size: 0.9em;
+  color: #3c9fdd;
+  font-size: 0.85em;
 }
 
 .game-count {
-  color: var(--colorNeutralForeground2);
-  font-size: 0.9em;
+  color: #3c9fdd;
+  font-size: 0.85em;
 }
 
 .loading-indicator {
@@ -66,16 +71,18 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: var(--colorNeutralForeground2);
+  color: #ffffff;
 }
 
 .no-games-message {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: var(--colorNeutralForeground2);
+  color: #3c9fdd;
   text-align: center;
+  gap: 8px;
 }
 
 .error-message {
@@ -83,7 +90,7 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: var(--colorPaletteRedForegroundInverted);
+  color: #ef4444;
   text-align: center;
 }
 
@@ -91,8 +98,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  overflow-y: auto; /* Make list scrollable */
-  flex-grow: 1; /* Allow list to grow */
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .game-info {
@@ -109,83 +116,82 @@
 }
 
 .download-progress {
-  margin: 20px 0;
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #111111;
+  border: 1px solid #252525;
 }
 
 .progress-bar {
-  height: 8px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
+  height: 6px;
+  background-color: #252525;
+  border-radius: 3px;
   overflow: hidden;
   margin-bottom: 8px;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #1a73e8;
-  transition: width 0.3s ease;
+  background-color: #f6b012;
+  transition: width 250ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .progress-text {
   font-size: 0.8em;
-  color: var(--colorNeutralForeground2);
+  color: #3c9fdd;
   text-align: center;
 }
 
-/* TanStack Table Styles */
+/* table container */
 .games-container-table {
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 16px;
-  flex-grow: 1; /* Allow container to grow */
-  overflow: hidden; /* Hide overflow to allow inner scrolling */
+  flex-grow: 1;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--colorNeutralForeground2);
+  border: 1px solid #252525;
+  background-color: #0a0a0a;
 }
 
 .games-toolbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
-  /* move to the right */
+  gap: 12px;
   margin-left: auto;
 }
 
 .table-wrapper {
-  overflow-y: auto; /* Make table body scrollable */
+  overflow-y: auto;
   flex-grow: 1;
   margin-top: 8px;
-  border: 1px solid var(--colorNeutralForeground2);
-  border-radius: 4px;
-  position: relative; /* Added: Needed for absolute positioning of children like popover */
+  border: 1px solid #252525;
+  border-radius: 8px;
+  position: relative;
+  background-color: #050505;
 }
 
 .games-table {
   width: 100%;
   border-collapse: collapse;
-  /* Ensure fixed layout is active */
   table-layout: fixed;
 }
 
 .games-table tbody {
-  /* Required for virtualizer absolute positioning context */
   position: relative;
 }
 
 .games-table th,
 .games-table td {
-  /* Remove border-bottom */
-  /* border-bottom: 1px solid #e0e0e0; */
-  padding: 10px 12px;
+  padding: 12px 16px;
   text-align: left;
   font-size: 13px;
   vertical-align: middle;
-  transition: background-color 0.2s;
+  transition: background-color 200ms cubic-bezier(0.33, 1, 0.68, 1);
   box-sizing: border-box;
   overflow: hidden;
+  color: #ffffff;
 }
 
 .games-table td {
@@ -194,64 +200,58 @@
 }
 
 .games-table th {
-  /* background-color: #f8f9fa; */
   font-weight: 500;
-  color: var(--colorNeutralForeground1);
-  border-bottom: 1px solid var(--colorNeutralForeground2);
+  color: #f6b012;
+  border-bottom: 1px solid #252525;
+  background-color: #0a0a0a;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
-/* Cell Styling for Name/Package */
+/* name/package cell */
 .name-package-cell {
   display: flex;
   flex-direction: column;
-  line-height: 1.3; /* Adjust line height for spacing */
-  /* Ensure this wrapper itself handles overflow if needed, though td should handle it */
+  line-height: 1.4;
   overflow: hidden;
-  /* flex: 1;
-  width: 100%; */
-  /* width: 100%; // Usually not needed if TD handles width */
 }
 
 .game-name-main {
   font-weight: 500;
-  color: var(--colorNeutralForeground1);
-  /* Ensure truncation if name alone is too long */
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .game-package-sub {
-  font-size: 11px; /* Smaller font size */
-  color: var(--colorNeutralForeground3); /* Grey color */
-  font-family: monospace;
-  margin-top: 2px; /* Small space between name and package */
-  /* Ensure truncation */
+  font-size: 11px;
+  color: #3c9fdd;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Remove specific game-package-cell styles that are now handled by game-package-sub */
-/* .game-package-cell { ... } */
-
-/* Ensure thumbnail cell aligns correctly */
+/* thumbnail cell */
 .game-thumbnail-cell {
   width: 70px;
   height: 70px;
-  padding: 5px; /* Adjust padding as needed */
-  display: flex; /* Use flex to center content vertically */
+  padding: 4px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  /* Remove fixed height here if set on parent TR */
 }
 
 .game-thumbnail-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px;
-  display: block; /* Remove extra space below image */
+  border-radius: 6px;
+  display: block;
+  border: 1px solid #252525;
 }
 
 .cursor-pointer {
@@ -262,113 +262,146 @@
   user-select: none;
 }
 
-/* Filter Buttons Styles */
+/* filter buttons */
 .filter-buttons {
   display: flex;
   gap: 8px;
-  margin-left: 16px;
 }
 
 .filter-buttons button {
-  padding: 4px 10px;
+  padding: 6px 12px;
   font-size: 0.85em;
-  background-color: #f8f9fa;
-  border: 1px solid #dadce0;
-  border-radius: 12px; /* More rounded */
+  background-color: #111111;
+  border: 1px solid #252525;
+  border-radius: 6px;
   cursor: pointer;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    color 0.2s;
+  color: #ffffff;
+  transition: all 200ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .filter-buttons button:hover {
-  background-color: #f1f3f4;
-  border-color: #c6c8cc;
+  background-color: #1a1a1a;
+  border-color: #f6b012;
+  color: #f6b012;
 }
 
 .filter-buttons button.active {
-  background-color: #e8f0fe; /* Light blue */
-  border-color: #1a73e8;
-  color: #174ea6; /* Darker blue */
+  background-color: #1a1a1a;
+  border-color: #f6b012;
+  color: #f6b012;
   font-weight: 500;
 }
 
-/* Add Row Background Styles */
-.row-installed .game-name-main {
-  color: var(--colorBrandForeground1); /* Lighter green, slightly transparent */
-}
-/* Style for rows with available updates (Added) */
-.row-update-available .game-name-main {
-  color: var(--colorPaletteLightGreenForeground1); /* A slightly more noticeable light green */
-  font-weight: 600;
+.filter-buttons button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
-/* Standard hover for non-installed */
-/* .row-installed:hover {
-  background-color: var(--colorPaletteGreenBackground2);
-} */
-/* Standard hover for non-installed */
-/* .row-update-available:hover {
-  background-color: var(--colorPaletteGreenBackground2);
-} */
+.filter-buttons button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.collection-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px; /* Add some space from the main filter buttons */
+}
+
+.collection-filter-chips button {
+  padding: 6px 12px;
+  font-size: 0.85em;
+  background-color: #0a0a0a; /* Slightly darker background */
+  border: 1px solid #252525;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: all 200ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.collection-filter-chips button:hover {
+  background-color: #1a1a1a;
+  border-color: #3c9fdd; /* Blue hover for collections */
+  color: #3c9fdd;
+}
+
+.collection-filter-chips button.active {
+  background-color: #1a1a1a;
+  border-color: #f6b012;
+  color: #f6b012;
+  font-weight: 500;
+}
+
+.collection-filter-chips button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.collection-filter-chips button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* row styles */
+.row-installed .game-name-main {
+  color: #22c55e;
+}
+
+.row-update-available .game-name-main {
+  color: #f6b012;
+  font-weight: 600;
+}
 
 .row-not-installed:hover,
 .row-installed:hover,
 .row-update-available:hover {
-  background-color: var(--colorNeutralBackground2);
+  background-color: #111111;
   cursor: pointer;
 }
 
-/* Resizer Styles */
+/* resizer */
 .resizer {
   position: absolute;
   right: 0;
   top: 0;
   height: 100%;
-  width: 5px; /* Handle width */
-  background: rgba(0, 0, 0, 0.1); /* Subtle handle color */
+  width: 5px;
+  background: #252525;
   cursor: col-resize;
   user-select: none;
-  touch-action: none; /* Disable touch scrolling */
-  opacity: 0; /* Hide by default */
-  transition: opacity 0.2s;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 200ms;
 }
 
 .resizer:hover,
 .resizer.isResizing {
-  opacity: 1; /* Show on hover or when resizing */
-  background: #1a73e8; /* Highlight color */
+  opacity: 1;
+  background: #f6b012;
 }
 
-.games-table th {
-  background-color: var(--colorNeutralBackground1);
-  z-index: 0;
-}
-
-/* Cell Styling for Version Column (Added) */
+/* version cell */
 .version-cell {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Align vertically */
+  justify-content: center;
   height: 100%;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .list-version-main {
-  font-weight: normal; /* Or match game-name-main if needed */
+  font-weight: normal;
   font-size: 1em;
-  /* Ensure truncation if needed */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #ffffff;
 }
 
 .installed-version-info {
-  font-size: 11px; /* Match game-package-sub */
-  color: var(--colorNeutralForeground3); /* Match game-package-sub */
-  font-family: monospace; /* Match game-package-sub */
-  margin-top: 2px; /* Match game-package-sub */
+  font-size: 11px;
+  color: #3c9fdd;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

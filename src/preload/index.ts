@@ -20,7 +20,9 @@ import {
   LogsAPIRenderer,
   MirrorAPIRenderer,
   Mirror,
-  WiFiBookmark
+  WiFiBookmark,
+  Collection,
+  CollectionsData
 } from '@shared/types'
 import { typedIpcRenderer } from '@shared/ipc-utils'
 
@@ -261,6 +263,48 @@ const api = {
     remove: (id: string): Promise<boolean> => typedIpcRenderer.invoke('wifi-bookmarks:remove', id),
     updateLastConnected: (id: string): Promise<void> =>
       typedIpcRenderer.invoke('wifi-bookmarks:update-last-connected', id)
+  },
+  // Collections and favorites API
+  collections: {
+    getAllData: (): Promise<CollectionsData> => typedIpcRenderer.invoke('collections:get-all-data'),
+    getFavorites: (): Promise<string[]> => typedIpcRenderer.invoke('collections:get-favorites'),
+    addToFavorites: (gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:add-to-favorites', gameId),
+    removeFromFavorites: (gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:remove-from-favorites', gameId),
+    toggleFavorite: (gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:toggle-favorite', gameId),
+    isFavorite: (gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:is-favorite', gameId),
+    getCollections: (): Promise<Collection[]> =>
+      typedIpcRenderer.invoke('collections:get-collections'),
+    getCollection: (id: string): Promise<Collection | null> =>
+      typedIpcRenderer.invoke('collections:get-collection', id),
+    createCollection: (
+      name: string,
+      description?: string,
+      color?: string,
+      icon?: string
+    ): Promise<Collection> =>
+      typedIpcRenderer.invoke('collections:create-collection', name, description, color, icon),
+    updateCollection: (
+      id: string,
+      updates: Partial<Omit<Collection, 'id' | 'createdDate'>>
+    ): Promise<Collection | null> =>
+      typedIpcRenderer.invoke('collections:update-collection', id, updates),
+    deleteCollection: (id: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:delete-collection', id),
+    addGameToCollection: (collectionId: string, gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:add-game-to-collection', collectionId, gameId),
+    removeGameFromCollection: (collectionId: string, gameId: string): Promise<boolean> =>
+      typedIpcRenderer.invoke('collections:remove-game-from-collection', collectionId, gameId),
+    getCollectionsForGame: (gameId: string): Promise<Collection[]> =>
+      typedIpcRenderer.invoke('collections:get-collections-for-game', gameId),
+    onCollectionsUpdated: (callback: (data: CollectionsData) => void): (() => void) => {
+      const listener = (_: IpcRendererEvent, data: CollectionsData): void => callback(data)
+      typedIpcRenderer.on('collections:updated', listener)
+      return () => typedIpcRenderer.removeListener('collections:updated', listener)
+    }
   },
   // Dependency Status Listeners
   onDependencyProgress: (

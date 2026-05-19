@@ -87,11 +87,11 @@ const MirrorSelector: React.FC = () => {
 
     switch (activeMirror.testStatus) {
       case 'success':
-        return <CheckmarkCircleRegular style={{ color: tokens.colorPaletteGreenForeground1 }} />
+        return <CheckmarkCircleRegular style={{ color: '#22c55e' }} />
       case 'failed':
-        return <DismissCircleRegular style={{ color: tokens.colorPaletteRedForeground1 }} />
+        return <DismissCircleRegular style={{ color: '#ef4444' }} />
       default:
-        return <ClockRegular style={{ color: tokens.colorNeutralForeground3 }} />
+        return <ClockRegular style={{ color: '#3c9fdd' }} />
     }
   }
 

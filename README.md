@@ -1,200 +1,227 @@
-<h1 align="center">apprentice vr</h1>
+# Forge VR
 
-apprentice vr is a modern, cross-platform desktop application built with electron, react, and typescript, designed for managing and sideloading content onto meta quest devices. it aims to provide a user-friendly and feature-rich alternative to existing sideloading tools. this is a fork of the original [project](https://github.com/houseofmates/apprentice-vr). i use this every day to manage my quest 2 library, so expect it to stay maintained and useful.
+A modern, feature-rich Quest VR game manager with a focus on organization, efficiency, and a premium user experience.
 
-<h2 align="center">inspiration</h2>
+<div align="center">
+  <img src="./build/icon.png" alt="Forge VR logo" width="120">
 
-this project is heavily inspired by the fantastic work done on [rookie sideloader](https://github.com/VRPirates/rookie). apprentice vr seeks to build upon that foundation by offering a contemporary interface and experience across windows, mac, and linux.
-
-<h2 align="center">features</h2>
-
-- **cross-platform:** works seamlessly on windows, macos, and linux.
-- **modern user interface:** dark color scheme tailored for long-term desktop use — low eye strain, high contrast.
-- **device management:**
-  - automatically detect and list connected quest 2 devices.
-  - connect to and disconnect from devices.
-  - view device details such as model, id, battery level, and storage information.
-  - handles unauthorized and offline device states.
-- **game library management:**
-  - browse a comprehensive list of available games and applications.
-  - view game details including thumbnails, descriptions, versions, popularity, size, and last update date.
-  - search and filter games by name, package id, installation status, or available updates.
-- **installation & sideloading:**
-  - download game files and obbs.
-  - install, uninstall, and update applications on your quest 2 device.
-  - reinstall existing applications.
-  - handle updates for installed applications.
-- **download management:**
-  - view and manage a queue of ongoing and completed downloads.
-  - track download progress, extraction progress, and installation status.
-  - cancel, retry, and delete downloaded files.
-- **automatic dependency handling:** manages required tools like adb and rclone.
-- **light & dark mode:** adapts to your system preferred theme.
-
-<h2 align="center">screenshots</h2>
-
-here are some glimpses of apprentice vr in action:
-
-**device list (dark mode)**
-![device list - dark mode](screenshots/01_devices_dark.png)
-
-**game library (light mode)**
-![game library - light mode](screenshots/02_library_light.png)
-
-**game details (light mode)**
-![game details - light mode](screenshots/03_detail_light.png)
-
-**downloads manager (dark mode)**
-![downloads manager - dark mode](screenshots/04_download_dark.png)
-
-<h2 align="center">macos specifics</h2>
-
-important: since the application is not signed by an apple developer id, when you first try to open apprenticevr.app on macos after building or downloading it, you might encounter an error message stating: "apprenticevr is damaged and can\'t be opened. you should move it to the trash."
-
-this error occurs because macos gatekeeper flags applications downloaded from the internet or built by unidentified developers as potentially unsafe. the com.apple.quarantine extended attribute is added to the application bundle by the system.
-
-to resolve this, you can remove this extended attribute by running the following command in your terminal:
-
-```bash
-xattr -c /Applications/apprenticevr.app
-```
-
-note:
-
-- you might need to adjust the path /applications/apprenticevr.app if you have placed the application in a different location.
-- the -c flag in the xattr command stands for "clear," and it removes all extended attributes from the specified file or application bundle. by removing the quarantine attribute, you are essentially telling macos that you trust this application.
-
-after running this command, you should be able to open apprentice vr without any issues.
-
-<h2 align="center">logs</h2>
-
-by default, it writes logs to the following locations:
-
-- **on linux:** ~/.config/apprenticevr/logs/main.log
-- **on macos:** ~/library/logs/apprenticevr/main.log
-- **on windows:** %userprofile%\appdata\roaming\apprenticevr\logs\main.log
-
-note: when opening an issue, please include the latest log output from the appropriate log file above to help with debugging and troubleshooting.
-
-you can also upload the current log file in the settings menu and share the url.
-
-<h2 align="center">troubleshooting</h2>
-
-if apprentice vr is unable to connect, follow the steps below to identify and resolve the issue:
+  **organize, download, and install quest vr games with style**
+</div>
 
 ---
 
-<h2 align="center">use the latest version</h2>
+## Features
 
-make sure you are using the latest version of apprentice vr:
-https://github.com/houseofmates/apprentice-vr
+### 📚 Game Library Management
+- **Collections & Favorites** — Organize games into custom collections with colors (Horror, Puzzle, Must Play, etc.) and mark favorites with a single click
+- **Smart Filtering** — Filter by All, Favorites, Installed, Updates Available, or any custom collection
+- **Batch Operations** — Select multiple games with checkboxes, then download, install, or uninstall them all at once
+- **Virtual Scrolling** — Smooth performance even with thousands of games
 
----
+### ⌨️ Keyboard-First Experience
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+F` | Focus search |
+| `Ctrl+D` | Toggle downloads drawer |
+| `Ctrl+U` | Toggle uploads drawer |
+| `Ctrl+,` | Open settings |
+| `Ctrl+1` | Switch to games view |
+| `Ctrl+R` | Refresh game list |
+| `Escape` | Close drawers/dialogs |
 
-<h2 align="center">check network access</h2>
+### 📱 Device Integration
+- **Wireless ADB** — Connect to your Quest over WiFi
+- **WiFi Bookmarks** — Save frequently-used device connections
+- **Real-time Status** — See battery level, storage usage, and connection status at a glance
 
-ensure you can access the following urls from your browser:
+### 📥 Downloads & Uploads
+- **Slide-out Drawers** — Quick access to download/upload queues without leaving the games view
+- **Progress Tracking** — Live download speed, ETA, and extraction progress
+- **Queue Management** — Pause, resume, retry, or cancel downloads
 
-- https://raw.githubusercontent.com/ (should redirect to the github homepage)
-- https://downloads.rclone.org/
-- https://go.vrpyourself.online/
-  getting a message like "sorry, you have been blocked" means it is working!
+### 🪞 Mirror System
+- **Custom Mirrors** — Add your own rclone-based mirrors
+- **Mirror Testing** — Test connectivity and latency before use
+- **Automatic Failover** — Falls back to working mirrors if one fails
 
----
-
-<h2 align="center">change dns settings</h2>
-
-some isps block specific domains. switch to a public, non-censoring dns provider:
-
-- [cloudflare dns (1.1.1.1)](https://developers.cloudflare.com/1.1.1.1/setup/windows/)
-- [google public dns (8.8.8.8)](https://developers.google.com/speed/public-dns/docs/using)
-- [opendns](https://www.opendns.com/setupguide/)
-
----
-
-<h2 align="center">try a vpn</h2>
-
-if dns changes do not help, your isp might be blocking access. use a vpn to bypass restrictions:
-
-- [protonvpn (free)](https://protonvpn.com/)
-- [1.1.1.1 vpn (free)](https://one.one.one.one/)
-- [alternate vpn example](https://gprivate.com/5yxo8)
-
----
-
-<h2 align="center">router or firewall blocking</h2>
-
-if a vpn works, but a direct connection does not, your router or antivirus/firewall may be blocking access.
-check out this guide for help:
-
-https://rentry.co/asusrouterblock
-
-you can either:
-
-- continue using a vpn
-- or identify and whitelist the following domains in your router/firewall settings:
-  - raw.githubusercontent.com
-  - downloads.rclone.org
-  - go.vrpyourself.online
+### 🎨 Premium Dark Theme
+- **Solid dark backgrounds** — `#050505` base for comfortable extended use
+- **Warm color palette** — Yellow (`#f6b012`) accents with blue (`#3c9fdd`) info colors
+- **Smooth animations** — Polished micro-interactions throughout
+- **Collapsible settings** — Clean, organized UI with expandable sections
 
 ---
 
-if you are still stuck, feel free to open an issue or ask for help in the community. happy vr-ing!
+## Comparison
 
-<h2 align="center">recommended ide setup</h2>
+| Feature | Forge VR | SideQuest | Rookie |
+|---------|:--------:|:---------:|:------:|
+| Game Collections | ✅ | ❌ | ❌ |
+| Batch Operations | ✅ | ❌ | ❌ |
+| Keyboard Shortcuts | ✅ | ❌ | ❌ |
+| Custom Mirrors | ✅ | ❌ | ✅ |
+| Wireless ADB | ✅ | ✅ | ✅ |
+| Modern Dark UI | ✅ | ✅ | ❌ |
+| Open Source | ✅ | ❌ | ❌ |
 
-- [vscode](https://code.visualstudio.com/) + [eslint](https://marketplace.visualstudio.com/items?itemname=dbaeumer.vscode-eslint) + [prettier](https://marketplace.visualstudio.com/items?itemname=esbenp.prettier-vscode)
+---
 
-<h2 align="center">project setup</h2>
+## Installation
 
-<h3 align="center">prerequisites</h3>
+### Requirements
+- Windows 10/11, macOS, or Linux
+- Meta Quest headset (Quest 1, 2, 3, or Pro)
+- USB cable or WiFi connectivity (Quest must have developer mode enabled)
 
-- [node.js](https://nodejs.org/) (which includes npm)
-- [pnpm](https://pnpm.io/installation) (recommended package manager)
+### Download
 
-<h3 align="center">install dependencies</h3>
+Download the latest release for your platform from [Releases](https://github.com/houseofmates/forge-vr/releases):
 
-```bash
-pnpm install
-```
+| Platform | File |
+|----------|------|
+| Windows | `forge-vr-x.x.x-setup-x64.exe` |
+| macOS (Apple Silicon) | `forge-vr-x.x.x-arm64.dmg` |
+| macOS (Intel) | `forge-vr-x.x.x-x64.dmg` |
+| Linux | `forge-vr-x.x.x-x64.AppImage` |
 
-<h2 align="center">development</h2>
+### Quick Start
 
-to run the application in development mode with hot-reloading:
+1. **Connect** your Quest via USB (enable developer mode first)
+2. **Launch** Forge VR — your device will be detected automatically
+3. **Browse** games, use collections to organize, download, and install!
 
-```bash
-pnpm dev
-```
+---
 
-this will start the electron application and open a development server for the react frontend.
+## macOS Notes
 
-<h2 align="center">building the application</h2>
+Since the application is not signed by an Apple Developer ID, you may see: "Forge VR is damaged and can't be opened."
 
-you can build the application for different platforms using the following commands:
-
-```bash
-# for windows
-pnpm build:win
-
-# for macos
-pnpm build:mac
-
-# for linux
-pnpm build:linux
-```
-
-builds will be located in the `dist` or a platform-specific output directory.
-
-<h2 align="center">linting and formatting</h2>
-
-to lint the codebase:
+To resolve this, run in Terminal:
 
 ```bash
-pnpm lint
+xattr -c /Applications/Forge\ VR.app
 ```
 
-to format the codebase with prettier:
+---
+
+## Logs
+
+Log files are stored at:
+
+- **Linux:** `~/.config/forge-vr/logs/main.log`
+- **macOS:** `~/Library/Logs/forge-vr/main.log`
+- **Windows:** `%USERPROFILE%\AppData\Roaming\forge-vr\logs\main.log`
+
+You can also upload logs directly from Settings for support.
+
+---
+
+## Troubleshooting
+
+### Device Not Detected
+1. Enable Developer Mode on your Quest (Settings → System → Developer)
+2. Allow USB debugging when prompted on headset
+3. Try a different USB port/cable
+4. Restart ADB: `adb kill-server && adb start-server`
+
+### WiFi Connection Issues
+1. Ensure Quest and PC are on the same network
+2. Check that port 5555 is not blocked by firewall
+3. Try connecting via USB first, then switch to WiFi
+
+### Network/DNS Issues
+If you see connectivity errors:
+
+1. **Change DNS** — Try Cloudflare (1.1.1.1) or Google (8.8.8.8)
+2. **Use a VPN** — ProtonVPN or 1.1.1.1 VPN (both free)
+3. **Check firewall** — Whitelist required domains
+
+---
+
+## Development
+
+### Prerequisites
+- [Node.js 18+](https://nodejs.org/)
+- npm or pnpm
+
+### Setup
 
 ```bash
-pnpm format
+# Clone the repository
+git clone https://github.com/houseofmates/forge-vr.git
+cd forge-vr
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
+
+### Build
+
+```bash
+# Build for current platform
+npm run build
+
+# Build for specific platforms
+npm run build:win
+npm run build:mac
+npm run build:linux
+```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start with hot reload |
+| `npm run build` | Build for current platform |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format with Prettier |
+
+---
+
+## Technology
+
+Built with:
+- **Electron** — Cross-platform desktop framework
+- **React 19** — UI library
+- **Fluent UI v9** — Microsoft's design system (customized with PKM theme)
+- **TanStack Table** — Performant virtualized data tables
+- **ADB** — Android Debug Bridge for device communication
+- **rclone** — Cloud storage downloads
+
+---
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## Credits
+
+- Based on [Apprentice VR](https://github.com/houseofmates/apprentice-vr) by House of Mates
+- Inspired by [Rookie Sideloader](https://github.com/VRPirates/rookie)
+- Icons from Fluent UI Icons
+- Theme design based on PKM (Personal Knowledge Management) aesthetic principles
+
+---
+
+## License
+
+This project is provided as-is for personal use. Please respect the original project's licensing terms.
+
+---
+
+<div align="center">
+  <strong>Forge VR</strong> — Craft your perfect VR library.
+
+  <sub>made with care for the Quest community</sub>
+</div>

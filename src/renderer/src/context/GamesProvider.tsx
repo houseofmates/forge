@@ -16,8 +16,7 @@ const parseVersion = (versionString: string): number | null => {
   // Join digits and parse as integer (handles versions like "1.2.3" -> 123)
   try {
     return parseInt(match.join(''), 10)
-  } catch (e) {
-    console.warn(`Failed to parse version string: ${versionString}`, e)
+  } catch {
     return null
   }
 }
@@ -82,7 +81,6 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
             pkg.packageName
           )
           if (!applicationLabel) {
-            console.error(`No application label found for ${pkg.packageName}, skipping...`)
             continue
           }
           candidates.push({
@@ -125,7 +123,6 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
       }
 
       if (candidates.length > 0) {
-        console.log('Found upload candidates:', candidates)
         setUploadCandidates(candidates)
       }
     }
@@ -253,10 +250,8 @@ export const GamesProvider: React.FC<GamesProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAndLoad = async (): Promise<void> => {
       if (isReady && !isInitialLoadComplete) {
-        console.log('Dependencies ready, initializing game service and loading games...')
         try {
           setIsLoading(true)
-          //await window.api.initializeGameService()
           await loadGames()
         } catch (initError) {
           console.error('Failed to initialize game service or load games:', initError)

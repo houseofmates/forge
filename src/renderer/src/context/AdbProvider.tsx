@@ -49,8 +49,8 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
             bookmarkData: matchingBookmark // And keep the bookmark data for actions
           } as DeviceWithBookmark
         }
-      } catch (error) {
-        console.error('Error fetching bookmarks for merge:', error)
+      } catch {
+        // Failed to fetch bookmarks for merge
       }
 
       return device
@@ -138,9 +138,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
         selectedDevice === device.id &&
         (device.type === 'offline' || device.type === 'unauthorized')
       ) {
-        console.log(
-          `[AdbProvider] Currently selected device ${device.id} went ${device.type}, disconnecting from app`
-        )
         setSelectedDevice(null)
         setIsConnected(false)
         setPackages([])
@@ -225,7 +222,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
 
   // Load installed packages from connected device
   const loadPackages = useCallback(async (): Promise<void> => {
-    console.log('Loading packages for device:', selectedDevice)
     if (!selectedDevice) return
     try {
       setLoadingPackages(true)
@@ -241,7 +237,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
   }, [selectedDevice])
 
   const getUserName = useCallback(async (): Promise<string> => {
-    console.log('Getting user name for device:', selectedDevice)
     if (!selectedDevice) return ''
 
     try {
@@ -259,7 +254,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
 
   const setUserName = useCallback(
     async (name: string): Promise<void> => {
-      console.log('Setting user name for device:', selectedDevice)
       if (!selectedDevice) return
 
       try {
@@ -316,8 +310,7 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
             reachable: result.reachable,
             responseTime: result.responseTime
           }
-        } catch (error) {
-          console.error(`Error pinging ${device.ipAddress}:`, error)
+        } catch {
           return {
             deviceId: device.id,
             reachable: false,
@@ -425,7 +418,7 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
       pingWifiDevices(allDevices)
     } catch (err) {
       setError('Failed to load devices')
-      console.error('Error loading devices:', err)
+      console.error('Error refreshing devices:', err)
     } finally {
       setIsLoading(false)
     }
@@ -440,10 +433,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
       if (device && isTcpDevice(device) && device.ipAddress) {
         // For TCP devices that are offline or have unreachable ping status, do a ping check first
         if (device.pingStatus === 'unreachable' || device.type === 'offline') {
-          console.log(
-            `[AdbProvider] Device ${serial} appears offline, checking connectivity first...`
-          )
-
           // Update the device ping status to "checking"
           setDevices((prevDevices) =>
             prevDevices.map((d) =>
@@ -469,23 +458,13 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
           )
 
           if (!pingResult.reachable) {
-            console.log(
-              `[AdbProvider] Ping to ${device.ipAddress} failed, cancelling connection attempt`
-            )
             return false
           }
-
-          console.log(
-            `[AdbProvider] Ping to ${device.ipAddress} successful, proceeding with connection`
-          )
         }
       }
 
       // If already connected to a device, disconnect first
       if (isConnected && selectedDevice && selectedDevice !== serial) {
-        console.log(
-          `Disconnecting from current device ${selectedDevice} before connecting to ${serial}`
-        )
         if (selectedDevice.includes(':')) {
           // Current device is TCP, disconnect properly
           const [ip, port] = selectedDevice.split(':')
@@ -524,8 +503,6 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
       const deviceId = `${ipAddress}:${port}`
 
       // For TCP devices, always do a ping check first before attempting to connect
-      console.log(`[AdbProvider] Checking connectivity to ${ipAddress} before TCP connection...`)
-
       // Find the device in our list to update its ping status
       const device = devices.find(
         (d) => d.id === deviceId || (hasBookmarkData(d) && d.bookmarkData.ipAddress === ipAddress)
@@ -560,17 +537,11 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
       }
 
       if (!pingResult.reachable) {
-        console.log(`[AdbProvider] Ping to ${ipAddress} failed, cancelling TCP connection attempt`)
         return false
       }
 
-      console.log(`[AdbProvider] Ping to ${ipAddress} successful, proceeding with TCP connection`)
-
       // If already connected to a device, disconnect first
       if (isConnected && selectedDevice && selectedDevice !== deviceId) {
-        console.log(
-          `Disconnecting from current device ${selectedDevice} before connecting to ${deviceId}`
-        )
         if (selectedDevice.includes(':')) {
           // Current device is TCP, disconnect properly
           const [currentIp, currentPort] = selectedDevice.split(':')
@@ -626,7 +597,7 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
       return success
     } catch (err) {
       setError('TCP disconnection error')
-      console.error('Error disconnecting from TCP device:', err)
+      console.error('Error disconnecting TCP device:', err)
       return false
     }
   }
@@ -644,8 +615,7 @@ export const AdbProvider: React.FC<AdbProviderProps> = ({ children }) => {
     async (ipAddress: string): Promise<{ reachable: boolean; responseTime?: number }> => {
       try {
         return await window.api.adb.pingDevice(ipAddress)
-      } catch (error) {
-        console.error('Error pinging device:', error)
+      } catch {
         return { reachable: false }
       }
     },

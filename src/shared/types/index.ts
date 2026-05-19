@@ -200,6 +200,23 @@ export interface BlacklistEntry {
   version: number | 'any'
 }
 
+// Collection types for favorites and custom collections
+export interface Collection {
+  id: string
+  name: string
+  description?: string
+  gameIds: string[] // Store game packageNames for reference
+  createdDate: string // ISO string
+  modifiedDate: string
+  color?: string
+  icon?: string
+}
+
+export interface CollectionsData {
+  collections: Collection[]
+  favoriteGameIds: string[] // packageNames of favorited games
+}
+
 export interface AdbAPI {
   listDevices: () => Promise<DeviceInfo[]>
   connectDevice: (serial: string) => Promise<boolean>

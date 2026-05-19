@@ -11,6 +11,7 @@ import updateService from './services/updateService'
 import logsService from './services/logsService'
 import mirrorService from './services/mirrorService'
 import wifiBookmarksService from './services/wifiBookmarksService'
+import { collectionsService } from './services/collectionsService'
 import { typedIpcMain } from '@shared/ipc-utils'
 import settingsService from './services/settingsService'
 import { typedWebContentsSend } from '@shared/ipc-utils'
@@ -60,7 +61,7 @@ function createWindow(): void {
     height: 900,
     show: false,
     autoHideMenuBar: true,
-    title: 'apprenticevr',
+    title: 'Forge VR',
     icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -172,7 +173,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.apprenticevr')
+  electronApp.setAppUserModelId('com.forgevr')
 
   // Setup file protocol handler for local resources
   protocol.registerFileProtocol('file', (request, callback) => {
@@ -602,6 +603,79 @@ app.whenReady().then(async () => {
   typedIpcMain.handle('downloads:copy-obb-folder', async (_event, folderPath, deviceId) => {
     console.log(`[IPC] OBB folder copy requested for ${folderPath} on device ${deviceId}`)
     return await downloadService.copyObbFolder(folderPath, deviceId)
+  })
+
+  // --- Collections Handlers ---
+  typedIpcMain.handle('collections:get-all-data', async () => {
+    return await collectionsService.getAllData()
+  })
+
+  typedIpcMain.handle('collections:get-favorites', async () => {
+    return await collectionsService.getFavorites()
+  })
+
+  typedIpcMain.handle('collections:add-to-favorites', async (_event, gameId) => {
+    return await collectionsService.addToFavorites(gameId)
+  })
+
+  typedIpcMain.handle('collections:remove-from-favorites', async (_event, gameId) => {
+    return await collectionsService.removeFromFavorites(gameId)
+  })
+
+  typedIpcMain.handle('collections:toggle-favorite', async (_event, gameId) => {
+    return await collectionsService.toggleFavorite(gameId)
+  })
+
+  typedIpcMain.handle('collections:is-favorite', async (_event, gameId) => {
+    return await collectionsService.isFavorite(gameId)
+  })
+
+  typedIpcMain.handle('collections:get-collections', async () => {
+    return await collectionsService.getCollections()
+  })
+
+  typedIpcMain.handle('collections:get-collection', async (_event, id) => {
+    return await collectionsService.getCollection(id)
+  })
+
+  typedIpcMain.handle(
+    'collections:create-collection',
+    async (_event, name, description, color, icon) => {
+      return await collectionsService.createCollection(name, description, color, icon)
+    }
+  )
+
+  typedIpcMain.handle('collections:update-collection', async (_event, id, updates) => {
+    return await collectionsService.updateCollection(id, updates)
+  })
+
+  typedIpcMain.handle('collections:delete-collection', async (_event, id) => {
+    return await collectionsService.deleteCollection(id)
+  })
+
+  typedIpcMain.handle(
+    'collections:add-game-to-collection',
+    async (_event, collectionId, gameId) => {
+      return await collectionsService.addGameToCollection(collectionId, gameId)
+    }
+  )
+
+  typedIpcMain.handle(
+    'collections:remove-game-from-collection',
+    async (_event, collectionId, gameId) => {
+      return await collectionsService.removeGameFromCollection(collectionId, gameId)
+    }
+  )
+
+  typedIpcMain.handle('collections:get-collections-for-game', async (_event, gameId) => {
+    return await collectionsService.getCollectionsForGame(gameId)
+  })
+
+  // Forward collections updates to renderer
+  collectionsService.on('collections-updated', (data) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      typedWebContentsSend.send(mainWindow, 'collections:updated', data)
+    }
   })
 
   // Validate that all IPC channels have handlers registered

@@ -33,7 +33,7 @@ const useStyles = makeStyles({
   },
   highlightVersion: {
     fontWeight: 'bold',
-    color: tokens.colorBrandForeground1
+    color: '#f6b012'
   },
   actionButtons: {
     display: 'flex',
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
   },
   icon: {
     fontSize: '24px',
-    color: tokens.colorBrandForeground1
+    color: '#f6b012'
   },
   tabContent: {
     marginTop: tokens.spacingVerticalM,
@@ -67,8 +67,8 @@ const useStyles = makeStyles({
   commitItem: {
     padding: tokens.spacingVerticalS,
     borderRadius: tokens.borderRadiusSmall,
-    backgroundColor: tokens.colorNeutralBackground2,
-    border: `1px solid ${tokens.colorNeutralStroke2}`
+    backgroundColor: '#0a0a0a',
+    border: '1px solid #252525'
   },
   commitHeader: {
     display: 'flex',
@@ -79,25 +79,25 @@ const useStyles = makeStyles({
   commitSha: {
     fontFamily: 'monospace',
     fontSize: '12px',
-    color: tokens.colorNeutralForeground2,
-    backgroundColor: tokens.colorNeutralBackground3,
+    color: '#ffffff',
+    backgroundColor: '#111111',
     padding: '2px 6px',
     borderRadius: tokens.borderRadiusSmall
   },
   commitMessage: {
     fontSize: '14px',
-    color: tokens.colorNeutralForeground1,
+    color: '#ffffff',
     marginBottom: tokens.spacingVerticalXS
   },
   commitMeta: {
     fontSize: '12px',
-    color: tokens.colorNeutralForeground2,
+    color: '#ffffff',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   commitLink: {
-    color: tokens.colorBrandForeground1,
+    color: '#f6b012',
     textDecoration: 'none',
     '&:hover': {
       textDecoration: 'underline'
@@ -120,13 +120,11 @@ export function UpdateNotification(): React.ReactElement | null {
   useEffect(() => {
     // Set up update listeners
     const removeCheckingListener = window.api.updates?.onCheckingForUpdate?.(() => {
-      console.log('Checking for updates...')
       setIsChecking(true)
       setUpdateError(null)
     })
 
     const removeAvailableListener = window.api.updates?.onUpdateAvailable?.((info) => {
-      console.log('Update available:', info)
       setUpdateAvailable(info)
       setIsChecking(false)
       // Automatically open dialog when update is available
@@ -153,8 +151,7 @@ export function UpdateNotification(): React.ReactElement | null {
     try {
       setIsChecking(true)
       await window.api.updates?.checkForUpdates?.()
-    } catch (error) {
-      console.error('Failed to check for updates:', error)
+    } catch {
       setIsChecking(false)
     }
   }
@@ -225,14 +222,14 @@ export function UpdateNotification(): React.ReactElement | null {
       <div className={styles.updateContent}>
         <div className={styles.contentWithIcon}>
           <div className={styles.releaseInfo}>
-            <Text size="large">
+            <Text size={400}>
               A new version{' '}
               <span className={styles.highlightVersion}>{updateAvailable.version}</span> is
               available.
             </Text>
 
             {updateAvailable.releaseDate && (
-              <Text size="small">
+              <Text size={200}>
                 Released: {new Date(updateAvailable.releaseDate).toLocaleDateString()}
               </Text>
             )}
@@ -298,7 +295,7 @@ export function UpdateNotification(): React.ReactElement | null {
             )}
 
             <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: '1px solid #e0e0e0' }}>
-              <Text size="small" style={{ color: '#666' }}>
+              <Text size={200} style={{ color: '#666' }}>
                 Visit the{' '}
                 <Button
                   appearance="transparent"

@@ -10,7 +10,8 @@ import {
   FilterFn,
   ColumnFiltersState,
   Row,
-  ColumnSizingState
+  ColumnSizingState,
+  RowSelectionState
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useAdb } from '../hooks/useAdb'
@@ -39,7 +40,8 @@ import {
   DialogBody,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Checkbox
 } from '@fluentui/react-components'
 import {
   ArrowClockwiseRegular,
@@ -54,15 +56,23 @@ import {
   FolderAddRegular,
   DocumentRegular,
   ChevronDownRegular,
-  CopyRegular
+  CopyRegular,
+  StarRegular,
+  StarFilled,
+  ArrowLeftRegular,
+  FolderRegular
 } from '@fluentui/react-icons'
-import { ArrowLeftRegular } from '@fluentui/react-icons'
 import GameDetailsDialog from './GameDetailsDialog'
 import { useGameDialog } from '@renderer/hooks/useGameDialog'
+import { useCollections } from '@renderer/hooks/useCollections'
 import MirrorSelector from './MirrorSelector'
+import CollectionsDrawer from './CollectionsDrawer'
+import BatchActionBar from './BatchActionBar'
 
 // Column width constants
 const COLUMN_WIDTHS = {
+  SELECTION: 40,
+  FAVORITE: 40,
   STATUS: 60,
   THUMBNAIL: 90,
   VERSION: 180,
@@ -74,6 +84,8 @@ const COLUMN_WIDTHS = {
 
 // Calculate fixed columns total width
 const FIXED_COLUMNS_WIDTH =
+  COLUMN_WIDTHS.SELECTION +
+  COLUMN_WIDTHS.FAVORITE +
   COLUMN_WIDTHS.STATUS +
   COLUMN_WIDTHS.THUMBNAIL +
   COLUMN_WIDTHS.VERSION +
@@ -81,7 +93,7 @@ const FIXED_COLUMNS_WIDTH =
   COLUMN_WIDTHS.SIZE +
   COLUMN_WIDTHS.LAST_UPDATED
 
-type FilterType = 'all' | 'installed' | 'update'
+type FilterType = 'all' | 'installed' | 'update' | 'favorites'
 
 const filterGameNameAndPackage: FilterFn<GameInfo> = (row, _columnId, filterValue) => {
   const searchStr = String(filterValue).toLowerCase()
@@ -105,17 +117,17 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    height: 'calc(100vh - 90px)',
+    height: 'calc(100dvh - 64px)',
     overflow: 'hidden',
-    backgroundColor: tokens.colorNeutralBackground1
+    backgroundColor: '#050505'
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     ...shorthands.padding(tokens.spacingVerticalL, tokens.spacingHorizontalL),
-    ...shorthands.borderBottom(tokens.strokeWidthThin, 'solid', tokens.colorNeutralStroke1),
-    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderBottom(tokens.strokeWidthThin, 'solid', '#333333'),
+    backgroundColor: '#111111',
     flexShrink: 0
   },
   headerLeft: {
@@ -137,7 +149,7 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalXS,
-    color: tokens.colorPaletteRedForeground1
+    color: '#ef4444'
   },
   tableContainer: {
     flexGrow: 1,
@@ -222,7 +234,7 @@ const useStyles = makeStyles({
     }
   },
   isResizing: {
-    background: tokens.colorBrandBackground,
+    background: '#f6b012',
     opacity: 1
   }
 })
@@ -261,6 +273,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     deleteFiles
   } = useDownload()
 
+  const { toggleFavorite, isFavorite, collections, setActiveCollection, activeCollection } =
+    useCollections()
+
   const styles = useStyles()
 
   const [globalFilter, setGlobalFilter] = useState('')
@@ -272,6 +287,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [tableWidth, setTableWidth] = useState<number>(0)
   const tableContainerRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({})
   const [isEditingUserName, setIsEditingUserName] = useState<boolean>(false)
   const [editUserNameValue, setEditUserNameValue] = useState<string>('')
@@ -281,44 +297,74 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const [installSuccess, setInstallSuccess] = useState<boolean | null>(null)
   const [showObbConfirmDialog, setShowObbConfirmDialog] = useState<boolean>(false)
   const [obbFolderToConfirm, setObbFolderToConfirm] = useState<string | null>(null)
+  const [isCollectionsDrawerOpen, setIsCollectionsDrawerOpen] = useState<boolean>(false)
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [batchCollectionDrawerOpen, setBatchCollectionDrawerOpen] = useState<boolean>(false)
+  const [selectedGameForCollection, setSelectedGameForCollection] = useState<string | null>(null)
+
+  // Get selected games from row selection
+  const selectedGames = useMemo(() => {
+    return Object.keys(rowSelection)
+      .filter((packageName) => rowSelection[packageName])
+      .map((packageName) => games.find((g) => g.packageName === packageName))
+      .filter((g): g is GameInfo => g !== undefined)
+  }, [rowSelection, games])
+
+  // Clear selection when filter changes
+  useEffect(() => {
+    setRowSelection({})
+  }, [activeFilter, activeCollection])
 
   const counts = useMemo(() => {
     const total = games.length
     const installed = games.filter((g) => g.isInstalled).length
     const updates = games.filter((g) => g.hasUpdate).length
-    return { total, installed, updates }
-  }, [games])
+    const favs = games.filter((g) => isFavorite(g.packageName)).length
+    return { total, installed, updates, favs }
+  }, [games, isFavorite])
 
   useEffect(() => {
     setColumnFilters((prev) => {
-      const otherFilters = prev.filter((f) => f.id !== 'isInstalled' && f.id !== 'hasUpdate')
+      const otherFilters = prev.filter(
+        (f) =>
+          f.id !== 'isInstalled' &&
+          f.id !== 'hasUpdate' &&
+          f.id !== 'isFavorite' &&
+          f.id !== 'collections'
+      )
+
+      let newFilters = otherFilters
+      if (activeCollection) {
+        newFilters = [...newFilters, { id: 'collections', value: activeCollection.id }]
+      }
+
       switch (activeFilter) {
         case 'installed':
-          return [...otherFilters, { id: 'isInstalled', value: true }]
+          setActiveCollection(null)
+          return [...newFilters, { id: 'isInstalled', value: true }]
         case 'update':
+          setActiveCollection(null)
           return [
-            ...otherFilters,
+            ...newFilters,
             { id: 'isInstalled', value: true },
             { id: 'hasUpdate', value: true }
           ]
+        case 'favorites':
+          setActiveCollection(null)
+          return [...newFilters, { id: 'isFavorite', value: true }]
         case 'all':
         default:
-          return otherFilters
+          setActiveCollection(null)
+          return newFilters
       }
     })
-  }, [activeFilter])
+  }, [activeFilter, activeCollection, setActiveCollection])
 
   useEffect(() => {
     const unsubscribe = window.api.adb.onInstallationCompleted((deviceId) => {
-      console.log(`[GamesView] Received installation-completed event for device: ${deviceId}`)
       if (selectedDevice && deviceId === selectedDevice) {
-        console.log(`[GamesView] Refreshing packages for current device ${selectedDevice}...`)
-        loadPackages()
-          .then(() => console.log('[GamesView] Package refresh triggered successfully.'))
-          .catch((err) => console.error('[GamesView] Error triggering package refresh:', err))
-      } else {
-        console.log(
-          `[GamesView] Installation completed event for non-selected device (${deviceId}), ignoring.`
+        loadPackages().catch((err) =>
+          console.error('[GamesView] Error triggering package refresh:', err)
         )
       }
     })
@@ -327,6 +373,25 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       unsubscribe()
     }
   }, [selectedDevice, loadPackages, games])
+
+  // Listen for keyboard shortcut events from AppLayout
+  useEffect(() => {
+    const handleFocusSearch = (): void => {
+      searchInputRef.current?.focus()
+    }
+
+    const handleRefreshGames = (): void => {
+      refreshGames()
+    }
+
+    window.addEventListener('focus-search', handleFocusSearch)
+    window.addEventListener('refresh-games', handleRefreshGames)
+
+    return () => {
+      window.removeEventListener('focus-search', handleFocusSearch)
+      window.removeEventListener('refresh-games', handleRefreshGames)
+    }
+  }, [refreshGames])
 
   const downloadStatusMap = useMemo(() => {
     const map = new Map<string, { status: string; progress: number }>()
@@ -389,6 +454,76 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
     return [
       {
+        id: 'select',
+        header: ({ table }) => (
+          <div className={styles.statusIconCell}>
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() ? 'mixed' : false)
+              }
+              onChange={(_, data) => table.toggleAllPageRowsSelected(!!data.checked)}
+              aria-label="Select all"
+            />
+          </div>
+        ),
+        size: COLUMN_WIDTHS.SELECTION,
+        enableResizing: false,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className={styles.statusIconCell}>
+            <Checkbox
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              onChange={(_, data) => row.toggleSelected(!!data.checked)}
+              aria-label="Select row"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )
+      },
+      {
+        id: 'favorite',
+        header: '',
+        size: COLUMN_WIDTHS.FAVORITE,
+        enableResizing: false,
+        enableSorting: false,
+        cell: ({ row }) => {
+          const game = row.original
+          const isFav = isFavorite(game.packageName)
+
+          const handleFavoriteClick = (e: React.MouseEvent): void => {
+            e.stopPropagation() // Prevent row click
+            toggleFavorite(game.packageName)
+          }
+
+          return (
+            <div className={styles.statusIconCell}>
+              <button
+                onClick={handleFavoriteClick}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title={isFav ? 'Remove from favorites' : 'Add to favorites'}
+                aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                {isFav ? (
+                  <StarFilled fontSize={18} color="#f6b012" />
+                ) : (
+                  <StarRegular fontSize={18} color="#666666" />
+                )}
+              </button>
+            </div>
+          )
+        }
+      },
+      {
         id: 'downloadStatus',
         header: '',
         size: COLUMN_WIDTHS.STATUS,
@@ -407,23 +542,15 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
             <div className={styles.statusIconCell}>
               <div style={{ display: 'flex', gap: tokens.spacingHorizontalXXS }}>
                 {isDownloaded && (
-                  <DesktopRegular
-                    fontSize={16}
-                    color={tokens.colorNeutralForeground3}
-                    aria-label="Installed"
-                  />
+                  <DesktopRegular fontSize={16} color="#3c9fdd" aria-label="Installed" />
                 )}
                 {isInstalled && (
-                  <CheckmarkCircleRegular
-                    fontSize={16}
-                    color={tokens.colorPaletteGreenForeground1}
-                    aria-label="Downloaded"
-                  />
+                  <CheckmarkCircleRegular fontSize={16} color="#22c55e" aria-label="Downloaded" />
                 )}
                 {isUpdateAvailable && (
                   <ArrowClockwiseRegular
                     fontSize={16}
-                    color={tokens.colorPaletteGreenForeground1}
+                    color="#22c55e"
                     aria-label="Update Available"
                   />
                 )}
@@ -582,9 +709,31 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         accessorKey: 'hasUpdate',
         header: 'Update Status',
         enableResizing: false
+      },
+      {
+        id: 'isFavorite',
+        header: 'Favorite Status',
+        enableResizing: false,
+        accessorFn: (row) => isFavorite(row.packageName),
+        filterFn: (row, _columnId, filterValue) => {
+          if (!filterValue) return true
+          return isFavorite(row.original.packageName)
+        }
+      },
+      {
+        id: 'collections',
+        header: 'Collections',
+        enableResizing: false,
+        accessorFn: (row) => collections.some((col) => col.gameIds.includes(row.packageName)),
+        filterFn: (row, _columnId, filterValue) => {
+          if (!filterValue) return true
+          const activeCollectionId = filterValue as string
+          const collection = collections.find((col) => col.id === activeCollectionId)
+          return collection ? collection.gameIds.includes(row.original.packageName) : false
+        }
       }
     ]
-  }, [downloadStatusMap, styles, tableWidth])
+  }, [downloadStatusMap, styles, tableWidth, isFavorite, toggleFavorite, collections])
 
   const table = useReactTable({
     data: games,
@@ -597,9 +746,18 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       sorting,
       globalFilter,
       columnFilters,
-      columnVisibility: { isInstalled: false, hasUpdate: false },
-      columnSizing
+      columnVisibility: {
+        isInstalled: false,
+        hasUpdate: false,
+        isFavorite: false,
+        collections: false
+      },
+      columnSizing,
+      rowSelection
     },
+    enableRowSelection: true,
+    getRowId: (row) => row.packageName,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -653,7 +811,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     _event: React.MouseEvent<HTMLTableRowElement>,
     row: Row<GameInfo>
   ): void => {
-    console.log('Row clicked for game:', row.original.name)
     setDialogGame(row.original)
     setIsDialogOpen(true)
   }
@@ -673,18 +830,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
   const handleInstall = (game: GameInfo): void => {
     if (!game) return
-    console.log('Install action triggered for:', game.packageName)
-    addDownloadToQueue(game)
-      .then((success) => {
-        if (success) {
-          console.log(`Successfully added ${game.releaseName} to download queue.`)
-        } else {
-          console.log(`Failed to add ${game.releaseName} to queue (might already exist).`)
-        }
-      })
-      .catch((err) => {
-        console.error('Error adding to queue:', err)
-      })
+    addDownloadToQueue(game).catch((err) => {
+      console.error('Error adding to queue:', err)
+    })
   }
 
   const handleUninstall = async (game: GameInfo): Promise<void> => {
@@ -700,13 +848,12 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(`Uninstall: Starting for ${game.name} (${game.packageName}) on ${selectedDevice}.`)
     setIsLoading(true)
 
     try {
       const success = await window.api.adb.uninstallPackage(selectedDevice, game.packageName)
       if (success) {
-        console.log(`Uninstall: Successfully uninstalled ${game.packageName}.`)
+        // Uninstall successful
       } else {
         console.error(`Uninstall: Failed to uninstall ${game.packageName}.`)
         window.alert('Failed to uninstall the game.')
@@ -735,38 +882,26 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(`Reinstall: Starting for ${game.name} (${game.packageName}) on ${selectedDevice}.`)
     setIsLoading(true)
 
     try {
       // Step 1: Uninstall the package
-      console.log(`Reinstall: Attempting to uninstall ${game.packageName}...`)
       const uninstallSuccess = await window.api.adb.uninstallPackage(
         selectedDevice,
         game.packageName
       )
 
       if (uninstallSuccess) {
-        console.log(`Reinstall: Successfully uninstalled ${game.packageName}.`)
         // The game is now uninstalled from the device.
         // Downloaded files (if any) should still be present.
 
         const downloadInfo = downloadStatusMap.get(game.releaseName)
 
         if (downloadInfo?.status === 'Completed') {
-          console.log(
-            `Reinstall: Files for ${game.releaseName} are 'Completed'. Initiating install from completed.`
-          )
           await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
-          console.log(`Reinstall: 'installFromCompleted' called for ${game.releaseName}.`)
         } else {
-          console.log(
-            `Reinstall: Files for ${game.releaseName} not 'Completed' (status: ${downloadInfo?.status}). Adding to download queue.`
-          )
           const addToQueueSuccess = await addDownloadToQueue(game)
-          if (addToQueueSuccess) {
-            console.log(`Reinstall: Successfully added ${game.releaseName} to download queue.`)
-          } else {
+          if (!addToQueueSuccess) {
             console.warn(
               `Reinstall: Failed to add ${game.releaseName} to queue. Current status: ${downloadInfo?.status}.`
             )
@@ -790,7 +925,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       setIsLoading(false)
       // Refresh packages to update UI. The 'installation-completed' event should also trigger this,
       // but it's good to have a fallback or an immediate refresh after the uninstall part.
-      console.log(`Reinstall: Process finished for ${game.name}. Triggering package refresh.`)
       loadPackages().catch((err) =>
         console.error('Reinstall: Error refreshing packages post-operation:', err)
       )
@@ -808,29 +942,14 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       return
     }
 
-    console.log(
-      `Update action triggered for: ${game.name} (${game.packageName}) on ${selectedDevice}`
-    )
-
     try {
       const downloadInfo = downloadStatusMap.get(game.releaseName)
 
       if (downloadInfo?.status === 'Completed') {
-        console.log(
-          `Update for ${game.releaseName}: Files are already 'Completed'. Initiating install from completed.`
-        )
         await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
-        console.log(`Update: 'installFromCompleted' called for ${game.releaseName}.`)
-        // Optionally, refresh packages or rely on 'installation-completed' event
-        // loadPackages().catch(err => console.error('Update: Error refreshing packages post-install:', err));
       } else {
-        console.log(
-          `Update for ${game.releaseName}: Files not 'Completed' (status: ${downloadInfo?.status}). Adding to download queue.`
-        )
         const addToQueueSuccess = await addDownloadToQueue(game)
-        if (addToQueueSuccess) {
-          console.log(`Update: Successfully added ${game.releaseName} to download queue.`)
-        } else {
+        if (!addToQueueSuccess) {
           console.warn(
             `Update: Failed to add ${game.releaseName} to queue. Current status: ${downloadInfo?.status}.`
           )
@@ -849,13 +968,11 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
 
   const handleRetry = (game: GameInfo): void => {
     if (!game || !game.releaseName) return
-    console.log('Retry action triggered for:', game.releaseName)
     retryDownload(game.releaseName)
   }
 
   const handleCancelDownload = (game: GameInfo): void => {
     if (!game || !game.releaseName) return
-    console.log('Cancel download/extraction action triggered for:', game.releaseName)
     cancelDownload(game.releaseName)
   }
 
@@ -865,7 +982,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       window.alert('Cannot start installation: Missing required information.')
       return
     }
-    console.log(`Requesting install from completed for ${game.releaseName} on ${selectedDevice}`)
     window.api.downloads.installFromCompleted(game.releaseName, selectedDevice).catch((err) => {
       console.error('Error triggering install from completed:', err)
       window.alert('Failed to start installation. Please check the main process logs.')
@@ -875,12 +991,9 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
   const handleDeleteDownloaded = useCallback(
     async (game: GameInfo | null): Promise<void> => {
       if (!game || !game.releaseName) return
-      console.log('Delete downloaded files action triggered for:', game.releaseName)
       try {
         const success = await deleteFiles(game.releaseName)
-        if (success) {
-          console.log(`Successfully requested deletion of files for ${game.releaseName}.`)
-        } else {
+        if (!success) {
           console.error(`Failed to delete files for ${game.releaseName}.`)
           window.alert('Failed to delete downloaded files. Check logs.')
         }
@@ -939,7 +1052,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         }
 
         const fileName = filePath.split(/[/\\]/).pop() || filePath
-        console.log(`${itemName} install requested for: ${filePath}`)
 
         // Show the installation dialog
         setShowInstallDialog(true)
@@ -952,7 +1064,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         setInstallSuccess(success)
 
         if (success) {
-          console.log(`${itemName} installation successful for: ${filePath}`)
           setInstallStatusMessage(`✅ "${fileName}" installed successfully!`)
           // Refresh packages to update the UI
           await loadPackages()
@@ -989,7 +1100,6 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
         setInstallSuccess(success)
 
         if (success) {
-          console.log(`OBB folder copy successful for: ${folderPath}`)
           setInstallStatusMessage(`✅ "${folderName}" copied to OBB directory successfully!`)
         } else {
           console.error(`OBB folder copy failed for: ${folderPath}`)
@@ -1020,23 +1130,17 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
       }
 
       const folderName = folderPath.split(/[/\\]/).pop() || folderPath
-      console.log(`OBB folder copy requested for: ${folderPath}`)
 
       // Check if there's a corresponding package installed
       try {
         const installedPackages = await window.api.adb.getInstalledPackages(selectedDevice)
         const matchingPackage = installedPackages.find((pkg) => pkg.packageName === folderName)
-        console.log('installedPackages', installedPackages)
-        console.log('matchingPackage', matchingPackage)
         if (!matchingPackage) {
           // No matching package found, show confirmation dialog
-          console.log(`No matching package found for folder: ${folderName}`)
           setObbFolderToConfirm(folderPath)
           setShowObbConfirmDialog(true)
           return
         }
-
-        console.log(`Found matching package for folder: ${folderName}`)
       } catch (error) {
         console.error('Error checking installed packages:', error)
         // If we can't check packages, show a warning but let user proceed
@@ -1075,6 +1179,62 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
     setShowInstallDialog(false)
     setInstallSuccess(null)
     setInstallStatusMessage('')
+  }, [])
+
+  // Batch action handlers
+  const handleBatchDownload = useCallback(async () => {
+    for (const game of selectedGames) {
+      await addDownloadToQueue(game)
+    }
+    setRowSelection({})
+  }, [selectedGames, addDownloadToQueue])
+
+  const handleBatchInstall = useCallback(async () => {
+    if (!selectedDevice) return
+
+    for (const game of selectedGames) {
+      const downloadInfo = game.releaseName ? downloadStatusMap.get(game.releaseName) : undefined
+      if (downloadInfo?.status === 'Completed') {
+        await window.api.downloads.installFromCompleted(game.releaseName, selectedDevice)
+      }
+    }
+    setRowSelection({})
+  }, [selectedGames, selectedDevice, downloadStatusMap])
+
+  const handleBatchUninstall = useCallback(async () => {
+    if (!selectedDevice) return
+
+    const installedGames = selectedGames.filter((g) => g.isInstalled)
+    if (installedGames.length === 0) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to uninstall ${installedGames.length} game(s) from your device?`
+    )
+    if (!confirmed) return
+
+    setIsLoading(true)
+    try {
+      for (const game of installedGames) {
+        await window.api.adb.uninstallPackage(selectedDevice, game.packageName)
+      }
+      await loadPackages()
+    } finally {
+      setIsLoading(false)
+    }
+    setRowSelection({})
+  }, [selectedGames, selectedDevice, loadPackages])
+
+  const handleBatchAddToCollection = useCallback(() => {
+    if (selectedGames.length === 1) {
+      setSelectedGameForCollection(selectedGames[0].packageName)
+    } else {
+      setSelectedGameForCollection(null)
+    }
+    setBatchCollectionDrawerOpen(true)
+  }, [selectedGames])
+
+  const handleClearSelection = useCallback(() => {
+    setRowSelection({})
   }, [])
 
   const isBusy = adbLoading || loadingGames || isLoading || isManualInstalling
@@ -1159,7 +1319,7 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                       gap: tokens.spacingHorizontalXS
                     }}
                   >
-                    <Text size={200} style={{ color: tokens.colorNeutralForeground3 }}>
+                    <Text size={200} style={{ color: '#3c9fdd' }}>
                       Username in Multiplayer Games:
                     </Text>
                     <Button
@@ -1172,8 +1332,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                         minHeight: 'auto',
                         padding: `${tokens.spacingVerticalXS} ${tokens.spacingHorizontalS}`,
                         borderRadius: tokens.borderRadiusMedium,
-                        border: `1px solid ${tokens.colorNeutralStroke2}`,
-                        backgroundColor: tokens.colorNeutralBackground1
+                        border: '1px solid #252525',
+                        backgroundColor: '#050505'
                       }}
                       title="Click to change your VR gaming name (appears in games and apps)"
                     >
@@ -1281,35 +1441,72 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                 </MenuList>
               </MenuPopover>
             </Menu>
+            <Button
+              icon={<FolderRegular />}
+              onClick={() => setIsCollectionsDrawerOpen(true)}
+              disabled={isBusy}
+              title="Manage your game collections"
+            >
+              Collections
+            </Button>
             <span className="last-synced">Last synced: {formatDate(lastSyncTime)}</span>
-            {isConnected && (
-              <div className="filter-buttons">
+            <div className="filter-buttons">
+              <button
+                onClick={() => {
+                  setActiveFilter('all')
+                  setActiveCollection(null)
+                }}
+                className={activeFilter === 'all' && !activeCollection ? 'active' : ''}
+              >
+                All ({counts.total})
+              </button>
+              <button
+                onClick={() => setActiveFilter('favorites')}
+                className={activeFilter === 'favorites' ? 'active' : ''}
+                disabled={counts.favs === 0}
+              >
+                ★ Favorites ({counts.favs})
+              </button>
+              {isConnected && (
+                <>
+                  <button
+                    onClick={() => setActiveFilter('installed')}
+                    className={activeFilter === 'installed' ? 'active' : ''}
+                  >
+                    Installed ({counts.installed})
+                  </button>
+                  <button
+                    onClick={() => setActiveFilter('update')}
+                    className={activeFilter === 'update' ? 'active' : ''}
+                    disabled={counts.updates === 0}
+                  >
+                    Updates ({counts.updates})
+                  </button>
+                </>
+              )}
+              {collections.length > 0 && (
+                <span style={{ borderLeft: '1px solid #333', margin: '0 8px', height: '20px' }} />
+              )}
+              {collections.map((collection) => (
                 <button
-                  onClick={() => setActiveFilter('all')}
-                  className={activeFilter === 'all' ? 'active' : ''}
+                  key={collection.id}
+                  onClick={() => {
+                    setActiveFilter('all')
+                    setActiveCollection(collection)
+                  }}
+                  className={activeCollection?.id === collection.id ? 'active' : ''}
+                  style={{ borderLeftColor: collection.color || '#f6b012' }}
                 >
-                  All ({counts.total})
+                  {collection.name} ({collection.gameIds.length})
                 </button>
-                <button
-                  onClick={() => setActiveFilter('installed')}
-                  className={activeFilter === 'installed' ? 'active' : ''}
-                >
-                  Installed ({counts.installed})
-                </button>
-                <button
-                  onClick={() => setActiveFilter('update')}
-                  className={activeFilter === 'update' ? 'active' : ''}
-                  disabled={counts.updates === 0}
-                >
-                  Updates ({counts.updates})
-                </button>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </div>
         <div className="games-toolbar-right">
           <span className="game-count">{table.getFilteredRowModel().rows.length} displayed</span>
           <Input
+            ref={searchInputRef}
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(String(e.target.value))}
             placeholder="Search name/package..."
@@ -1451,6 +1648,11 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
               />
             )}
 
+            <CollectionsDrawer
+              open={isCollectionsDrawerOpen}
+              onClose={() => setIsCollectionsDrawerOpen(false)}
+            />
+
             {/* Manual Installation Progress Dialog */}
             <Dialog
               open={showInstallDialog}
@@ -1482,12 +1684,8 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                           marginTop: tokens.spacingVerticalM,
                           padding: tokens.spacingVerticalS,
                           borderRadius: tokens.borderRadiusMedium,
-                          backgroundColor: installSuccess
-                            ? tokens.colorPaletteGreenBackground1
-                            : tokens.colorPaletteRedBackground1,
-                          color: installSuccess
-                            ? tokens.colorPaletteGreenForeground1
-                            : tokens.colorPaletteRedForeground1
+                          backgroundColor: installSuccess ? '#081a0a' : '#1a0808',
+                          color: installSuccess ? '#22c55e' : '#ef4444'
                         }}
                       >
                         <Text weight="semibold">
@@ -1555,6 +1753,28 @@ const GamesView: React.FC<GamesViewProps> = ({ onBackToDevices }) => {
                 </DialogBody>
               </DialogSurface>
             </Dialog>
+
+            {/* Batch Collection Drawer */}
+            <CollectionsDrawer
+              open={batchCollectionDrawerOpen}
+              onClose={() => {
+                setBatchCollectionDrawerOpen(false)
+                setSelectedGameForCollection(null)
+              }}
+              selectedGameId={selectedGameForCollection}
+            />
+
+            {/* Batch Action Bar */}
+            <BatchActionBar
+              selectedGames={selectedGames}
+              onDownloadAll={handleBatchDownload}
+              onInstallAll={handleBatchInstall}
+              onUninstallAll={handleBatchUninstall}
+              onAddToCollection={handleBatchAddToCollection}
+              onClearSelection={handleClearSelection}
+              isConnected={isConnected}
+              isBusy={isBusy}
+            />
           </>
         )}
       </div>

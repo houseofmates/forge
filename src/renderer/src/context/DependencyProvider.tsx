@@ -13,9 +13,7 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({ children
   const [progress, setProgress] = useState<{ name: string; percentage: number } | null>(null)
 
   useEffect(() => {
-    console.log('DependencyProvider mounted. Requesting dependency status...')
     window.api.dependency.getStatus().then((status) => {
-      console.log('Dependency status:', status)
       setStatus(status)
       const allReady =
         status.sevenZip.ready &&
@@ -27,14 +25,12 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({ children
 
     // Setup listeners
     const removeProgressListener = window.api.onDependencyProgress((status, progressData) => {
-      console.log('Received dependency progress:', progressData)
       setStatus(status)
       setProgress(progressData)
       setError(null)
     })
 
     const removeCompleteListener = window.api.onDependencySetupComplete((finalStatus) => {
-      console.log('Dependency setup complete:', finalStatus)
       setStatus(finalStatus)
       // Determine overall readiness based on ALL dependencies
       const allReady =
@@ -62,7 +58,6 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({ children
     })
 
     const removeErrorListener = window.api.onDependencySetupError((errorInfo) => {
-      console.error('Dependency setup error:', errorInfo)
       setStatus(errorInfo.status)
       setIsReady(false)
       setError(errorInfo.message || 'Unknown dependency setup error')
@@ -72,7 +67,6 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({ children
     //window.api.initializeDependencies() // No await needed, fire-and-forget request
 
     return () => {
-      console.log('DependencyProvider unmounting, removing listeners.')
       removeProgressListener()
       removeCompleteListener()
       removeErrorListener()
