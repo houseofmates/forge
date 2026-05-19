@@ -61,7 +61,7 @@ function createWindow(): void {
     height: 900,
     show: false,
     autoHideMenuBar: true,
-    title: 'apprenticevr',
+    title: 'Forge VR',
     icon: icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -173,7 +173,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.apprenticevr')
+  electronApp.setAppUserModelId('com.forgevr')
 
   // Setup file protocol handler for local resources
   protocol.registerFileProtocol('file', (request, callback) => {

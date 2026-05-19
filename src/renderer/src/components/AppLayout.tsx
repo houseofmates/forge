@@ -226,7 +226,7 @@ const MainContent: React.FC<MainContentProps> = ({
             </ol>
             <Text style={{ marginTop: tokens.spacingVerticalM }}>
               <a
-                href="https://github.com/houseofmates/apprentice-vr#troubleshooting-guide"
+                href="https://github.com/houseofmates/forge-vr#troubleshooting-guide"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#3c9fdd' }}
@@ -504,9 +504,9 @@ const AppLayout: React.FC = () => {
             <div className={styles.root}>
               <div className={styles.header}>
                 <div className={styles.headerContent}>
-                  <img alt="apprentice vr" className={styles.logo} src={electronLogo} />
-                  <span className={styles.appTitle}>apprentice vr</span>
-                  <span className={styles.versionBadge}>v1.4.0</span>
+                  <img alt="forge vr" className={styles.logo} src={electronLogo} />
+                  <span className={styles.appTitle}>forge vr</span>
+                  <span className={styles.versionBadge}>v2.0.0</span>
                 </div>
                 <div className={styles.headerActions}>
                   {currentView !== AppView.DEVICE_LIST && (
@@ -588,7 +588,7 @@ const AppLayout: React.FC = () => {
                           icon={<InfoRegular />}
                           appearance="subtle"
                           onClick={() =>
-                            window.open('https://github.com/houseofmates/apprentice-vr', '_blank')
+                            window.open('https://github.com/houseofmates/forge-vr', '_blank')
                           }
                         />
                       </Tooltip>

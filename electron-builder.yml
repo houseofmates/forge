@@ -1,5 +1,5 @@
-appId: com.apprenticevr
-productName: apprenticevr
+appId: com.forgevr
+productName: Forge VR
 directories:
   buildResources: build
 icon: build/icon
@@ -31,7 +31,7 @@ win:
       arch:
         - x64
         - ia32
-  executableName: apprenticevr
+  executableName: forge-vr
 nsis:
   artifactName: ${name}-${version}-setup-${arch}.${ext}
   shortcutName: ${productName}
@@ -49,8 +49,8 @@ mac:
   extendInfo:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-    - CFBundleName: apprenticevr
-    - CFBundleDisplayName: apprenticevr
+    - CFBundleName: Forge VR
+    - CFBundleDisplayName: Forge VR
   notarize: false
   icon: build/icon.icns
 dmg:
@@ -75,6 +75,6 @@ npmRebuild: false
 publish:
   provider: github
   owner: houseofmates
-  repo: apprentice-vr
+  repo: forge-vr
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/

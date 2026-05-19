@@ -1,226 +1,227 @@
-# apprentice vr — pkm edition
+# Forge VR
 
-> a personalized fork with a beautiful dark theme, collapsible ui sections, and enhanced user experience
+A modern, feature-rich Quest VR game manager with a focus on organization, efficiency, and a premium user experience.
 
 <div align="center">
-  <img src="./build/icon.png" alt="apprentice vr logo" width="120">
+  <img src="./build/icon.png" alt="Forge VR logo" width="120">
 
-  **download, manage, and install quest vr games with style**
+  **organize, download, and install quest vr games with style**
 </div>
 
 ---
 
-## what makes this fork different?
+## Features
 
-this is a personalized fork featuring the **pkm aesthetic** — a warm, modern dark theme designed for comfortable extended use. the original [apprentice vr](https://github.com/houseofmates/apprentice-vr) is excellent, but i wanted something that felt more personal and matched my workflow preferences.
+### 📚 Game Library Management
+- **Collections & Favorites** — Organize games into custom collections with colors (Horror, Puzzle, Must Play, etc.) and mark favorites with a single click
+- **Smart Filtering** — Filter by All, Favorites, Installed, Updates Available, or any custom collection
+- **Batch Operations** — Select multiple games with checkboxes, then download, install, or uninstall them all at once
+- **Virtual Scrolling** — Smooth performance even with thousands of games
 
-### 🎨 visual design changes
-- **solid dark backgrounds** — `#050505` base with no gradients or glows
-- **varela round typography** — clean, lowercase ui text throughout
-- **warm color palette** — yellow (`#f6b012`) primary accents with blue (`#3c9fdd`) info colors
-- **consistent button styling** — subtle hover effects with border highlights
-- **smooth micro-animations** — 200ms cubic-bezier transitions everywhere
+### ⌨️ Keyboard-First Experience
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+F` | Focus search |
+| `Ctrl+D` | Toggle downloads drawer |
+| `Ctrl+U` | Toggle uploads drawer |
+| `Ctrl+,` | Open settings |
+| `Ctrl+1` | Switch to games view |
+| `Ctrl+R` | Refresh game list |
+| `Escape` | Close drawers/dialogs |
 
-### ✨ ux improvements
-- **collapsible sections** — settings organized into expandable panels for cleaner ui
-- **unified navigation** — games and settings accessible from header buttons
-- **slide-out drawers** — downloads and uploads in overlay panels instead of separate pages
-- **better visual hierarchy** — clear distinction between primary and secondary actions
-- **responsive layouts** — better handling of various window sizes
+### 📱 Device Integration
+- **Wireless ADB** — Connect to your Quest over WiFi
+- **WiFi Bookmarks** — Save frequently-used device connections
+- **Real-time Status** — See battery level, storage usage, and connection status at a glance
 
-### 🧩 new components
-- **`CollapsibleSection`** — reusable accordion component for organizing complex forms
-- **custom fluent theme** — complete dark theme override (`pkmTheme.ts`)
-- **enhanced device cards** — cleaner layout with wifi bookmark indicators and status badges
+### 📥 Downloads & Uploads
+- **Slide-out Drawers** — Quick access to download/upload queues without leaving the games view
+- **Progress Tracking** — Live download speed, ETA, and extraction progress
+- **Queue Management** — Pause, resume, retry, or cancel downloads
 
----
+### 🪞 Mirror System
+- **Custom Mirrors** — Add your own rclone-based mirrors
+- **Mirror Testing** — Test connectivity and latency before use
+- **Automatic Failover** — Falls back to working mirrors if one fails
 
-## features
-
-### game management
-- browse and search game library with real-time filtering
-- view installed vs available games at a glance (color-coded: green = installed, yellow = update available)
-- automatic version checking with update notifications
-- bulk download queue management
-
-### device connectivity
-- usb and wifi/tcp connection support
-- wifi device bookmarking for quick reconnection
-- real-time device status with ping monitoring
-- battery and storage info display
-- automatic quest device detection
-
-### downloads & uploads
-- parallel download management with progress tracking
-- configurable speed limits (kb/s or mb/s)
-- automatic extraction and installation
-- upload queue for sharing content
-
-### settings (now with collapsible sections!)
-- **download settings** — customizable download location with folder picker
-- **speed limits** — bandwidth throttling controls for download/upload
-- **log upload** — share logs for support/debugging via catbox.moe
-- **blacklist management** — manage games excluded from upload prompts
+### 🎨 Premium Dark Theme
+- **Solid dark backgrounds** — `#050505` base for comfortable extended use
+- **Warm color palette** — Yellow (`#f6b012`) accents with blue (`#3c9fdd`) info colors
+- **Smooth animations** — Polished micro-interactions throughout
+- **Collapsible settings** — Clean, organized UI with expandable sections
 
 ---
 
-## screenshots
+## Comparison
 
-**device list**
-![device list](screenshots/01_devices_dark.png)
-
-**game library**
-![game library](screenshots/02_library_light.png)
-
-**game details**
-![game details](screenshots/03_detail_light.png)
-
-**downloads manager**
-![downloads manager](screenshots/04_download_dark.png)
+| Feature | Forge VR | SideQuest | Rookie |
+|---------|:--------:|:---------:|:------:|
+| Game Collections | ✅ | ❌ | ❌ |
+| Batch Operations | ✅ | ❌ | ❌ |
+| Keyboard Shortcuts | ✅ | ❌ | ❌ |
+| Custom Mirrors | ✅ | ❌ | ✅ |
+| Wireless ADB | ✅ | ✅ | ✅ |
+| Modern Dark UI | ✅ | ✅ | ❌ |
+| Open Source | ✅ | ❌ | ❌ |
 
 ---
 
-## installation
+## Installation
 
-### requirements
-- windows 10/11, macos, or linux
-- meta quest headset (quest 1, 2, 3, or pro)
-- usb cable or wifi connectivity (quest must have developer mode enabled)
+### Requirements
+- Windows 10/11, macOS, or Linux
+- Meta Quest headset (Quest 1, 2, 3, or Pro)
+- USB cable or WiFi connectivity (Quest must have developer mode enabled)
 
-### quick start
+### Download
 
-1. **download** the latest release for your platform
-2. **connect** your quest via usb (enable developer mode first)
-3. **browse** games and click to download/install
+Download the latest release for your platform from [Releases](https://github.com/houseofmates/forge-vr/releases):
 
-### building from source
+| Platform | File |
+|----------|------|
+| Windows | `forge-vr-x.x.x-setup-x64.exe` |
+| macOS (Apple Silicon) | `forge-vr-x.x.x-arm64.dmg` |
+| macOS (Intel) | `forge-vr-x.x.x-x64.dmg` |
+| Linux | `forge-vr-x.x.x-x64.AppImage` |
+
+### Quick Start
+
+1. **Connect** your Quest via USB (enable developer mode first)
+2. **Launch** Forge VR — your device will be detected automatically
+3. **Browse** games, use collections to organize, download, and install!
+
+---
+
+## macOS Notes
+
+Since the application is not signed by an Apple Developer ID, you may see: "Forge VR is damaged and can't be opened."
+
+To resolve this, run in Terminal:
 
 ```bash
-# clone the repository
-git clone https://github.com/yourusername/apprentice-vr.git
-cd apprentice-vr
-
-# install dependencies (pnpm recommended)
-pnpm install
-
-# run in development mode
-pnpm dev
-
-# build for your platform
-pnpm build:win   # windows
-pnpm build:mac   # macos
-pnpm build:linux # linux
+xattr -c /Applications/Forge\ VR.app
 ```
 
 ---
 
-## macos specifics
+## Logs
 
-since the application is not signed by an apple developer id, when you first try to open apprenticevr.app on macos, you might see: "apprenticevr is damaged and can't be opened."
+Log files are stored at:
 
-to resolve this, run in terminal:
+- **Linux:** `~/.config/forge-vr/logs/main.log`
+- **macOS:** `~/Library/Logs/forge-vr/main.log`
+- **Windows:** `%USERPROFILE%\AppData\Roaming\forge-vr\logs\main.log`
+
+You can also upload logs directly from Settings for support.
+
+---
+
+## Troubleshooting
+
+### Device Not Detected
+1. Enable Developer Mode on your Quest (Settings → System → Developer)
+2. Allow USB debugging when prompted on headset
+3. Try a different USB port/cable
+4. Restart ADB: `adb kill-server && adb start-server`
+
+### WiFi Connection Issues
+1. Ensure Quest and PC are on the same network
+2. Check that port 5555 is not blocked by firewall
+3. Try connecting via USB first, then switch to WiFi
+
+### Network/DNS Issues
+If you see connectivity errors:
+
+1. **Change DNS** — Try Cloudflare (1.1.1.1) or Google (8.8.8.8)
+2. **Use a VPN** — ProtonVPN or 1.1.1.1 VPN (both free)
+3. **Check firewall** — Whitelist required domains
+
+---
+
+## Development
+
+### Prerequisites
+- [Node.js 18+](https://nodejs.org/)
+- npm or pnpm
+
+### Setup
 
 ```bash
-xattr -c /Applications/apprenticevr.app
+# Clone the repository
+git clone https://github.com/houseofmates/forge-vr.git
+cd forge-vr
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-adjust the path if you placed the app elsewhere.
-
----
-
-## logs
-
-by default, logs are written to:
-
-- **linux:** `~/.config/apprenticevr/logs/main.log`
-- **macos:** `~/library/logs/apprenticevr/main.log`
-- **windows:** `%userprofile%\appdata\roaming\apprenticevr\logs\main.log`
-
-you can also upload the current log file directly from the settings menu and share the url for support.
-
----
-
-## troubleshooting
-
-### device not detected
-1. enable developer mode on your quest
-2. allow usb debugging when prompted on headset
-3. try a different usb port/cable
-4. restart the adb server: `adb kill-server && adb start-server`
-
-### wifi connection issues
-1. ensure quest and pc are on the same network
-2. check that port 5555 is not blocked by firewall
-3. try connecting via usb first, then switch to wifi
-
-### connection problems
-1. **check network access** — ensure you can reach these urls:
-   - https://raw.githubusercontent.com/
-   - https://downloads.rclone.org/
-   - https://go.vrpyourself.online/
-
-2. **change dns** — some isps block domains. try:
-   - [cloudflare (1.1.1.1)](https://developers.cloudflare.com/1.1.1.1/setup/)
-   - [google (8.8.8.8)](https://developers.google.com/speed/public-dns/)
-
-3. **use a vpn** — if dns doesn't help:
-   - [protonvpn (free)](https://protonvpn.com/)
-   - [1.1.1.1 vpn (free)](https://one.one.one.one/)
-
-4. **router/firewall** — whitelist these domains if needed:
-   - raw.githubusercontent.com
-   - downloads.rclone.org
-   - go.vrpyourself.online
-
----
-
-## development
-
-### prerequisites
-- [node.js](https://nodejs.org/)
-- [pnpm](https://pnpm.io/installation) (recommended)
-
-### commands
+### Build
 
 ```bash
-pnpm install    # install dependencies
-pnpm dev        # run in development mode
-pnpm lint       # lint codebase
-pnpm format     # format with prettier
+# Build for current platform
+npm run build
+
+# Build for specific platforms
+npm run build:win
+npm run build:mac
+npm run build:linux
 ```
 
-### recommended ide
-- [vscode](https://code.visualstudio.com/) with eslint and prettier extensions
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start with hot reload |
+| `npm run build` | Build for current platform |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format with Prettier |
 
 ---
 
-## technology
+## Technology
 
-built with:
-- **electron** — cross-platform desktop framework
-- **react 18** — ui library
-- **fluent ui** — microsoft's design system (heavily customized)
-- **tanstack table** — performant data tables
-- **adb** — android debug bridge for device communication
-- **rclone** — cloud storage downloads
-
----
-
-## credits
-
-- original [apprentice vr](https://github.com/houseofmates/apprentice-vr) project by house of mates
-- inspired by [rookie sideloader](https://github.com/VRPirates/rookie)
-- theme design based on pkm (personal knowledge management) aesthetic principles
-- icons from fluent ui icons
+Built with:
+- **Electron** — Cross-platform desktop framework
+- **React 19** — UI library
+- **Fluent UI v9** — Microsoft's design system (customized with PKM theme)
+- **TanStack Table** — Performant virtualized data tables
+- **ADB** — Android Debug Bridge for device communication
+- **rclone** — Cloud storage downloads
 
 ---
 
-## license
+## Contributing
 
-this project is provided as-is for personal use. please respect the original project's licensing terms.
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## Credits
+
+- Based on [Apprentice VR](https://github.com/houseofmates/apprentice-vr) by House of Mates
+- Inspired by [Rookie Sideloader](https://github.com/VRPirates/rookie)
+- Icons from Fluent UI Icons
+- Theme design based on PKM (Personal Knowledge Management) aesthetic principles
+
+---
+
+## License
+
+This project is provided as-is for personal use. Please respect the original project's licensing terms.
 
 ---
 
 <div align="center">
-  <sub>made with care for the quest community</sub>
+  <strong>Forge VR</strong> — Craft your perfect VR library.
+
+  <sub>made with care for the Quest community</sub>
 </div>
