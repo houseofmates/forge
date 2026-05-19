@@ -340,7 +340,7 @@ every interface must implement the full interaction cycle:
 - [ ] `min-h-[100dvh]` used — never `h-screen`
 
 ### referenced verifications
-- [ ] apprentice-vr-pkm-verification-2026-05-06.md — PKM aesthetic verification from Apprentice VR fixes
+- [ ] forge-pkm-verification-2026-05-06.md — PKM aesthetic verification from Apprentice VR fixes
 
 ### ux — critical
 - [ ] color contrast ≥4.5:1 for normal text in both light and dark modes

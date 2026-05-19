@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎉 Major Release — Rebrand & Feature Expansion
 
-This release marks the transformation from Apprentice VR to **Forge VR**, introducing significant new features and a distinctive identity.
+This release marks the transformation from forge to **Forge VR**, introducing significant new features and a distinctive identity.
 
 ### Added
 
@@ -39,7 +39,7 @@ This release marks the transformation from Apprentice VR to **Forge VR**, introd
 ### Changed
 
 #### Branding
-- Renamed from "Apprentice VR" to "Forge VR"
+- Renamed from "forge" to "Forge VR"
 - New app ID: `com.forgevr`
 - Updated all references, URLs, and documentation
 - Version bump to 2.0.0
@@ -76,4 +76,4 @@ This release marks the transformation from Apprentice VR to **Forge VR**, introd
 
 ## [1.3.4] - Previous Release
 
-See the original [Apprentice VR changelog](https://github.com/houseofmates/apprentice-vr) for earlier history.
+See the original [forge changelog](https://github.com/houseofmates/forge) for earlier history.
