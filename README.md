@@ -1,102 +1,109 @@
-# Forge VR
+<h1 align="center">forge VR</h1>
 
-A modern, feature-rich Quest VR game manager with a focus on organization, efficiency, and a premium user experience.
+<h3 align="center">a modern, feature-rich quest VR game manager with a focus on organization, efficiency, and a premium user experience.</h3>
 
 <div align="center">
-  <img src="./build/icon.png" alt="Forge VR logo" width="120">
+  <img src="./build/icon.png" alt="simple yellow icon of a basic virtual reality headset, no background" width="120">
 
   **organize, download, and install quest vr games with style**
 </div>
 
 ---
 
-## Features
+<h2 align="center">features</h2>
 
-### 📚 Game Library Management
-- **Collections & Favorites** — Organize games into custom collections with colors (Horror, Puzzle, Must Play, etc.) and mark favorites with a single click
-- **Smart Filtering** — Filter by All, Favorites, Installed, Updates Available, or any custom collection
-- **Batch Operations** — Select multiple games with checkboxes, then download, install, or uninstall them all at once
-- **Virtual Scrolling** — Smooth performance even with thousands of games
+<h3 align="center">📚 game library management</h3>
 
-### ⌨️ Keyboard-First Experience
-| Shortcut | Action |
+- **collections & favorites** — organize games into custom collections with colors (horror, puzzle, must play, etc.) and mark favorites with a single click
+- **smart filtering** — filter by all, favorites, installed, updates available, or any custom collection
+- **batch operations** — select multiple games with checkboxes, then download, install, or uninstall them all at once
+- **virtual scrolling** — smooth performance even with thousands of games
+
+<h3 align="center">keyboard-first experience</h3>
+
+| shortcut | action |
 |----------|--------|
-| `Ctrl+F` | Focus search |
-| `Ctrl+D` | Toggle downloads drawer |
-| `Ctrl+U` | Toggle uploads drawer |
-| `Ctrl+,` | Open settings |
-| `Ctrl+1` | Switch to games view |
-| `Ctrl+R` | Refresh game list |
-| `Escape` | Close drawers/dialogs |
+| `ctrl+f` | focus search |
+| `ctrl+d` | toggle downloads drawer |
+| `ctrl+u` | toggle uploads drawer |
+| `ctrl+,` | open settings |
+| `ctrl+1` | switch to games view |
+| `ctrl+r` | refresh game list |
+| `escape` | close drawers/dialogs |
 
-### 📱 Device Integration
-- **Wireless ADB** — Connect to your Quest over WiFi
-- **WiFi Bookmarks** — Save frequently-used device connections
-- **Real-time Status** — See battery level, storage usage, and connection status at a glance
+<h3 align="center">device integration</h3>
 
-### 📥 Downloads & Uploads
-- **Slide-out Drawers** — Quick access to download/upload queues without leaving the games view
-- **Progress Tracking** — Live download speed, ETA, and extraction progress
-- **Queue Management** — Pause, resume, retry, or cancel downloads
+- **wireless ADB** — connect to your quest over wifi
+- **wifi bookmarks** — save frequently-used device connections
+- **real-time status** — see battery level, storage usage, and connection status at a glance
 
-### 🪞 Mirror System
-- **Custom Mirrors** — Add your own rclone-based mirrors
-- **Mirror Testing** — Test connectivity and latency before use
-- **Automatic Failover** — Falls back to working mirrors if one fails
+<h3 align="center">uploads + downloads</h3>
 
-### 🎨 Premium Dark Theme
-- **Solid dark backgrounds** — `#050505` base for comfortable extended use
-- **Warm color palette** — Yellow (`#f6b012`) accents with blue (`#3c9fdd`) info colors
-- **Smooth animations** — Polished micro-interactions throughout
-- **Collapsible settings** — Clean, organized UI with expandable sections
+- **slide-out drawers** — quick access to download/upload queues without leaving the games view
+- **progress tracking** — live download speed, ETA, and extraction progress
+- **queue management** — pause, resume, retry, or cancel downloads
+
+<h3 align="center">mirror system</h3>
+
+- **custom mirrors** — add your own rclone-based mirrors
+- **mirror testing** — test connectivity and latency before use
+- **automatic failover** — falls back to working mirrors if one fails
+
+<h3 align="center">premium dark theme</h3>
+
+- **solid dark backgrounds** — `#050505` base for comfortable extended use
+- **warm color palette** — yellow (`#f6b012`) accents with blue (`#3c9fdd`) info colors
+- **smooth animations** — polished micro-interactions throughout
+- **collapsible settings** — clean, organized UI with expandable sections
 
 ---
 
-## Comparison
+<h2 align="center">comparison</h2>
 
-| Feature | Forge VR | SideQuest | Rookie |
+| feature | forge VR | sidequest | rookie |
 |---------|:--------:|:---------:|:------:|
-| Game Collections | ✅ | ❌ | ❌ |
-| Batch Operations | ✅ | ❌ | ❌ |
-| Keyboard Shortcuts | ✅ | ❌ | ❌ |
-| Custom Mirrors | ✅ | ❌ | ✅ |
-| Wireless ADB | ✅ | ✅ | ✅ |
-| Modern Dark UI | ✅ | ✅ | ❌ |
-| Open Source | ✅ | ❌ | ❌ |
+| game collections | ✅ | ❌ | ❌ |
+| batch operations | ✅ | ❌ | ❌ |
+| keyboard shortcuts | ✅ | ❌ | ❌ |
+| custom mirrors | ✅ | ❌ | ✅ |
+| wireless ADB | ✅ | ✅ | ✅ |
+| modern dark UI | ✅ | ✅ | ❌ |
+| open source | ✅ | ❌ | ❌ |
 
 ---
 
-## Installation
+<h2 align="center">installation</h2>
 
-### Requirements
-- Windows 10/11, macOS, or Linux
-- Meta Quest headset (Quest 1, 2, 3, or Pro)
-- USB cable or WiFi connectivity (Quest must have developer mode enabled)
+<h3 align="center">requirements</h3>
 
-### Download
+- windows 10/11, macOS, or linux
+- meta quest headset (quest 1, 2, 3, or pro)
+- USB cable or wifi connectivity (quest must have developer mode enabled)
 
-Download the latest release for your platform from [Releases](https://github.com/houseofmates/forge-vr/releases):
+<h3 align="center">download</h3>
 
-| Platform | File |
+download the latest release for your platform from [releases](https://github.com/houseofmates/forge-vr/releases):
+
+| platform | file |
 |----------|------|
-| Windows | `forge-vr-x.x.x-setup-x64.exe` |
-| macOS (Apple Silicon) | `forge-vr-x.x.x-arm64.dmg` |
-| macOS (Intel) | `forge-vr-x.x.x-x64.dmg` |
-| Linux | `forge-vr-x.x.x-x64.AppImage` |
+| windows | `forge-vr-x.x.x-setup-x64.exe` |
+| macOS (apple silicon) | `forge-vr-x.x.x-arm64.dmg` |
+| macOS (intel) | `forge-vr-x.x.x-x64.dmg` |
+| linux | `forge-vr-x.x.x-x64.AppImage` |
 
-### Quick Start
+<h3 align="center">quick start</h3>
 
-1. **Connect** your Quest via USB (enable developer mode first)
-2. **Launch** Forge VR — your device will be detected automatically
-3. **Browse** games, use collections to organize, download, and install!
+1. **connect** your quest via USB (enable developer mode first)
+2. **launch** forge VR — your device will be detected automatically
+3. **browse** games, use collections to organize, download, and install!
 
 ---
 
-## macOS Notes
+<h2 align="center">macOS notes</h2>
 
-Since the application is not signed by an Apple Developer ID, you may see: "Forge VR is damaged and can't be opened."
+since the application is not signed by an apple developer ID, you may see: "forge VR is damaged and can't be opened."
 
-To resolve this, run in Terminal:
+to resolve this, run in terminal:
 
 ```bash
 xattr -c /Applications/Forge\ VR.app
@@ -104,124 +111,128 @@ xattr -c /Applications/Forge\ VR.app
 
 ---
 
-## Logs
+<h2 align="center">logs</h2>
 
-Log files are stored at:
+log files are stored at:
 
-- **Linux:** `~/.config/forge-vr/logs/main.log`
+- **linux:** `~/.config/forge-vr/logs/main.log`
 - **macOS:** `~/Library/Logs/forge-vr/main.log`
-- **Windows:** `%USERPROFILE%\AppData\Roaming\forge-vr\logs\main.log`
+- **windows:** `%USERPROFILE%\AppData\Roaming\forge-vr\logs\main.log`
 
-You can also upload logs directly from Settings for support.
-
----
-
-## Troubleshooting
-
-### Device Not Detected
-1. Enable Developer Mode on your Quest (Settings → System → Developer)
-2. Allow USB debugging when prompted on headset
-3. Try a different USB port/cable
-4. Restart ADB: `adb kill-server && adb start-server`
-
-### WiFi Connection Issues
-1. Ensure Quest and PC are on the same network
-2. Check that port 5555 is not blocked by firewall
-3. Try connecting via USB first, then switch to WiFi
-
-### Network/DNS Issues
-If you see connectivity errors:
-
-1. **Change DNS** — Try Cloudflare (1.1.1.1) or Google (8.8.8.8)
-2. **Use a VPN** — ProtonVPN or 1.1.1.1 VPN (both free)
-3. **Check firewall** — Whitelist required domains
+you can also upload logs directly from settings for support.
 
 ---
 
-## Development
+<h2 align="center">troubleshooting</h2>
 
-### Prerequisites
-- [Node.js 18+](https://nodejs.org/)
+<h3 align="center">device not detected</h3>
+
+1. enable developer mode on your quest (settings → system → developer)
+2. allow USB debugging when prompted on headset
+3. try a different USB port/cable
+4. restart ADB: `adb kill-server && adb start-server`
+
+<h3 align="center">wifi connection issues</h3>
+
+1. ensure quest and PC are on the same network
+2. check that port 5555 is not blocked by firewall
+3. try connecting via USB first, then switch to wifi
+
+<h3 align="center">network/DNS issues</h3>
+
+if you see connectivity errors:
+
+1. **change DNS** — try cloudflare (1.1.1.1) or google (8.8.8.8)
+2. **use a VPN** — protonVPN or 1.1.1.1 VPN (both free)
+3. **check firewall** — whitelist required domains
+
+---
+
+<h2 align="center">development</h2>
+
+<h3 align="center">prerequisites</h3>
+
+- [node.js 18+](https://nodejs.org/)
 - npm or pnpm
 
-### Setup
+<h3 align="center">setup</h3>
 
 ```bash
-# Clone the repository
+# clone the repository
 git clone https://github.com/houseofmates/forge-vr.git
 cd forge-vr
 
-# Install dependencies
+# install dependencies
 npm install
 
-# Start development server
+# start development server
 npm run dev
 ```
 
-### Build
+<h3 align="center">build</h3>
 
 ```bash
-# Build for current platform
+# build for current platform
 npm run build
 
-# Build for specific platforms
+# build for specific platforms
 npm run build:win
 npm run build:mac
 npm run build:linux
 ```
 
-### Commands
+<h3 align="center">commands</h3>
 
-| Command | Description |
+| command | description |
 |---------|-------------|
-| `npm run dev` | Start with hot reload |
-| `npm run build` | Build for current platform |
-| `npm run typecheck` | TypeScript type checking |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format with Prettier |
+| `npm run dev` | start with hot reload |
+| `npm run build` | build for current platform |
+| `npm run typecheck` | typescript type checking |
+| `npm run lint` | run ESLint |
+| `npm run format` | format with prettier |
 
 ---
 
-## Technology
+<h2 align="center">technology</h2>
 
-Built with:
-- **Electron** — Cross-platform desktop framework
-- **React 19** — UI library
-- **Fluent UI v9** — Microsoft's design system (customized with PKM theme)
-- **TanStack Table** — Performant virtualized data tables
-- **ADB** — Android Debug Bridge for device communication
-- **rclone** — Cloud storage downloads
-
----
-
-## Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+built with:
+- **electron** — cross-platform desktop framework
+- **react 19** — UI library
+- **fluent ui v9** — microsoft's design system (customized with PKM theme)
+- **tanstack table** — performant virtualized data tables
+- **ADB** — android debug bridge for device communication
+- **rclone** — cloud storage downloads
 
 ---
 
-## Credits
+<h2 align="center">contributing</h2>
 
-- Based on [Apprentice VR](https://github.com/houseofmates/apprentice-vr) by House of Mates
-- Inspired by [Rookie Sideloader](https://github.com/VRPirates/rookie)
-- Icons from Fluent UI Icons
-- Theme design based on PKM (Personal Knowledge Management) aesthetic principles
+contributions are welcome! Please:
+1. fork the repository
+2. create a feature branch (`git checkout -b feature/amazing-feature`)
+3. commit your changes (`git commit -m 'Add amazing feature'`)
+4. push to the branch (`git push origin feature/amazing-feature`)
+5. open a pull request
 
 ---
 
-## License
+<h2 align="center">credits</h2>
 
-This project is provided as-is for personal use. Please respect the original project's licensing terms.
+- based on [apprentice VR](https://github.com/jimzrt/apprenticeVr) by jimzrt
+- original was inspired by [rookie sideloader](https://github.com/VRPirates/rookie)
+- icons from fluent UI Icons
+- theme design based on PKM ([my personal knowledge management application](https://github.com/houseofmates/pkm)) aesthetic principles
+
+---
+
+<h2 align="center">license</h2>
+
+this project is provided as-is for personal use. please respect the original project's licensing terms.
 
 ---
 
 <div align="center">
-  <strong>Forge VR</strong> — Craft your perfect VR library.
+  <strong>forge vr</strong> — craft your perfect vr library.
 
-  <sub>made with care for the Quest community</sub>
+  <sub>made with care for the quest community</sub>
 </div>
