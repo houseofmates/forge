@@ -227,7 +227,7 @@ contributions are welcome! Please:
 
 <h2 align="center">license</h2>
 
-this project is provided as-is for personal use. please respect the original project's licensing terms.
+this project is provided as-is. please respect the original project's licensing terms.
 
 ---
 
