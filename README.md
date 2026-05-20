@@ -12,7 +12,7 @@
 
 <h2 align="center">features</h2>
 
-<h3 align="center">📚 game library management</h3>
+<h3 align="center">game library management</h3>
 
 - **collections & favorites** — organize games into custom collections with colors (horror, puzzle, must play, etc.) and mark favorites with a single click
 - **smart filtering** — filter by all, favorites, installed, updates available, or any custom collection
