@@ -233,10 +233,15 @@ npm run build:linux
 <h2 align="center">contributing</h2>
 
 <p align="center">contributions are welcome! please:</p>
+
 1. fork the repository
+
 2. create a feature branch (`git checkout -b feature/amazing-feature`)
+
 3. commit your changes (`git commit -m 'Add amazing feature'`)
+
 4. push to the branch (`git push origin feature/amazing-feature`)
+
 5. open a pull request
 
 <hr>
