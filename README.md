@@ -217,10 +217,10 @@ npm run build:linux
 </div>
 
 <hr>
-
 <h2 align="center">technology</h2>
 
 <p align="center">built with:</p>
+
 - **electron** — cross-platform desktop framework
 - **react 19** — UI library
 - **fluent ui v9** — microsoft's design system (customized with PKM theme)
