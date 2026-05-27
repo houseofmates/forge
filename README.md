@@ -5,10 +5,10 @@
 <div align="center">
   <img src="./build/icon.png" alt="simple yellow icon of a basic virtual reality headset, no background" width="120">
 
-  **organize, download, and install quest vr games with style**
+  <strong>organize, download, and install quest vr games with style</strong>
 </div>
 
----
+<hr>
 
 <h2 align="center">features</h2>
 
@@ -21,15 +21,22 @@
 
 <h3 align="center">keyboard-first experience</h3>
 
-| shortcut | action |
-|----------|--------|
-| `ctrl+f` | focus search |
-| `ctrl+d` | toggle downloads drawer |
-| `ctrl+u` | toggle uploads drawer |
-| `ctrl+,` | open settings |
-| `ctrl+1` | switch to games view |
-| `ctrl+r` | refresh game list |
-| `escape` | close drawers/dialogs |
+<div align="center">
+<table>
+  <thead>
+    <tr><th>shortcut</th><th>action</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>ctrl+f</code></td><td>focus search</td></tr>
+    <tr><td><code>ctrl+d</code></td><td>toggle downloads drawer</td></tr>
+    <tr><td><code>ctrl+u</code></td><td>toggle uploads drawer</td></tr>
+    <tr><td><code>ctrl+,</code></td><td>open settings</td></tr>
+    <tr><td><code>ctrl+1</code></td><td>switch to games view</td></tr>
+    <tr><td><code>ctrl+r</code></td><td>refresh game list</td></tr>
+    <tr><td><code>escape</code></td><td>close drawers/dialogs</td></tr>
+  </tbody>
+</table>
+</div>
 
 <h3 align="center">device integration</h3>
 
@@ -56,21 +63,28 @@
 - **smooth animations** — polished micro-interactions throughout
 - **collapsible settings** — clean, organized UI with expandable sections
 
----
+<hr>
 
 <h2 align="center">comparison</h2>
 
-| feature | forge VR | sidequest | rookie |
-|---------|:--------:|:---------:|:------:|
-| game collections | ✅ | ❌ | ❌ |
-| batch operations | ✅ | ❌ | ❌ |
-| keyboard shortcuts | ✅ | ❌ | ❌ |
-| custom mirrors | ✅ | ❌ | ✅ |
-| wireless ADB | ✅ | ✅ | ✅ |
-| modern dark UI | ✅ | ✅ | ❌ |
-| open source | ✅ | ❌ | ❌ |
+<div align="center">
+<table>
+  <thead>
+    <tr><th>feature</th><th>forge VR</th><th>sidequest</th><th>rookie</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>game collections</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>batch operations</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>keyboard shortcuts</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>custom mirrors</td><td>✅</td><td>❌</td><td>✅</td></tr>
+    <tr><td>wireless ADB</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>modern dark UI</td><td>✅</td><td>✅</td><td>❌</td></tr>
+    <tr><td>open source</td><td>✅</td><td>❌</td><td>❌</td></tr>
+  </tbody>
+</table>
+</div>
 
----
+<hr>
 
 <h2 align="center">installation</h2>
 
@@ -82,14 +96,21 @@
 
 <h3 align="center">download</h3>
 
-download the latest release for your platform from [releases](https://github.com/houseofmates/forge-vr/releases):
+<p align="center">download the latest release for your platform from <a href="https://github.com/houseofmates/forge-vr/releases">releases</a>:</p>
 
-| platform | file |
-|----------|------|
-| windows | `forge-vr-x.x.x-setup-x64.exe` |
-| macOS (apple silicon) | `forge-vr-x.x.x-arm64.dmg` |
-| macOS (intel) | `forge-vr-x.x.x-x64.dmg` |
-| linux | `forge-vr-x.x.x-x64.AppImage` |
+<div align="center">
+<table>
+  <thead>
+    <tr><th>platform</th><th>file</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>windows</td><td><code>forge-vr-x.x.x-setup-x64.exe</code></td></tr>
+    <tr><td>macOS (apple silicon)</td><td><code>forge-vr-x.x.x-arm64.dmg</code></td></tr>
+    <tr><td>macOS (intel)</td><td><code>forge-vr-x.x.x-x64.dmg</code></td></tr>
+    <tr><td>linux</td><td><code>forge-vr-x.x.x-x64.AppImage</code></td></tr>
+  </tbody>
+</table>
+</div>
 
 <h3 align="center">quick start</h3>
 
@@ -97,31 +118,30 @@ download the latest release for your platform from [releases](https://github.com
 2. **launch** forge VR — your device will be detected automatically
 3. **browse** games, use collections to organize, download, and install!
 
----
+<hr>
 
 <h2 align="center">macOS notes</h2>
 
-since the application is not signed by an apple developer ID, you may see: "forge VR is damaged and can't be opened."
+<p align="center">since the application is not signed by an apple developer ID, you may see: "forge VR is damaged and can't be opened."</p>
 
-to resolve this, run in terminal:
+<p align="center">to resolve this, run in terminal:</p>
 
-```bash
-xattr -c /Applications/Forge\ VR.app
-```
+<pre align="center"><code>xattr -c /Applications/Forge\ VR.app
+</code></pre>
 
----
+<hr>
 
 <h2 align="center">logs</h2>
 
-log files are stored at:
+<p align="center">log files are stored at:</p>
 
 - **linux:** `~/.config/forge-vr/logs/main.log`
 - **macOS:** `~/Library/Logs/forge-vr/main.log`
 - **windows:** `%USERPROFILE%\AppData\Roaming\forge-vr\logs\main.log`
 
-you can also upload logs directly from settings for support.
+<p align="center">you can also upload logs directly from settings for support.</p>
 
----
+<hr>
 
 <h2 align="center">troubleshooting</h2>
 
@@ -140,13 +160,13 @@ you can also upload logs directly from settings for support.
 
 <h3 align="center">network/DNS issues</h3>
 
-if you see connectivity errors:
+<p align="center">if you see connectivity errors:</p>
 
 1. **change DNS** — try cloudflare (1.1.1.1) or google (8.8.8.8)
 2. **use a VPN** — protonVPN or 1.1.1.1 VPN (both free)
 3. **check firewall** — whitelist required domains
 
----
+<hr>
 
 <h2 align="center">development</h2>
 
@@ -157,8 +177,7 @@ if you see connectivity errors:
 
 <h3 align="center">setup</h3>
 
-```bash
-# clone the repository
+<pre align="center"><code># clone the repository
 git clone https://github.com/houseofmates/forge-vr.git
 cd forge-vr
 
@@ -167,35 +186,41 @@ npm install
 
 # start development server
 npm run dev
-```
+</code></pre>
 
 <h3 align="center">build</h3>
 
-```bash
-# build for current platform
+<pre align="center"><code># build for current platform
 npm run build
 
 # build for specific platforms
 npm run build:win
 npm run build:mac
 npm run build:linux
-```
+</code></pre>
 
 <h3 align="center">commands</h3>
 
-| command | description |
-|---------|-------------|
-| `npm run dev` | start with hot reload |
-| `npm run build` | build for current platform |
-| `npm run typecheck` | typescript type checking |
-| `npm run lint` | run ESLint |
-| `npm run format` | format with prettier |
+<div align="center">
+<table>
+  <thead>
+    <tr><th>command</th><th>description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>npm run dev</code></td><td>start with hot reload</td></tr>
+    <tr><td><code>npm run build</code></td><td>build for current platform</td></tr>
+    <tr><td><code>npm run typecheck</code></td><td>typescript type checking</td></tr>
+    <tr><td><code>npm run lint</code></td><td>run ESLint</td></tr>
+    <tr><td><code>npm run format</code></td><td>format with prettier</td></tr>
+  </tbody>
+</table>
+</div>
 
----
+<hr>
 
 <h2 align="center">technology</h2>
 
-built with:
+<p align="center">built with:</p>
 - **electron** — cross-platform desktop framework
 - **react 19** — UI library
 - **fluent ui v9** — microsoft's design system (customized with PKM theme)
@@ -203,33 +228,32 @@ built with:
 - **ADB** — android debug bridge for device communication
 - **rclone** — cloud storage downloads
 
----
+<hr>
 
 <h2 align="center">contributing</h2>
 
-contributions are welcome! Please:
+<p align="center">contributions are welcome! please:</p>
 1. fork the repository
 2. create a feature branch (`git checkout -b feature/amazing-feature`)
 3. commit your changes (`git commit -m 'Add amazing feature'`)
 4. push to the branch (`git push origin feature/amazing-feature`)
 5. open a pull request
 
----
+<hr>
 
 <h2 align="center">credits</h2>
 
 - based on [apprentice VR](https://github.com/jimzrt/apprenticeVr) by jimzrt
 - original was inspired by [rookie sideloader](https://github.com/VRPirates/rookie)
 - icons from fluent UI Icons
-- theme design based on PKM ([my personal knowledge management application](https://github.com/houseofmates/pkm)) aesthetic principles
 
----
+<hr>
 
 <h2 align="center">license</h2>
 
-this project is provided as-is. please respect the original project's licensing terms.
+<p align="center">this project is provided as-is. please respect the original project's licensing terms.</p>
 
----
+<hr>
 
 <div align="center">
   <strong>forge</strong> — craft your perfect vr library.
