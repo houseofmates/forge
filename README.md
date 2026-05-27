@@ -251,12 +251,6 @@ npm run build:linux
 
 <h2 align="center">license</h2>
 
-<p align="center">this project is provided as-is. please respect the original project's licensing terms.</p>
+<p align="center">as a fork of the original apprentice VR, this project is under the same license (GPL 3.0) https://github.com/jimzrt/apprenticeVr?tab=GPL-3.0-1-ov-file.</p>
 
 <hr>
-
-<div align="center">
-  <strong>forge</strong> — craft your perfect vr library.
-
-  <sub>made with care for the quest community</sub>
-</div>
